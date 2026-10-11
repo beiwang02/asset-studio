@@ -455,7 +455,9 @@ body:not(.dark) .auth-brand small { color:#8490a5; }
 @font-face { font-family:BrandInter; src:url('./fonts/inter-latin-600-normal.woff2') format('woff2'); font-style:normal; font-weight:600; font-display:swap; }
 body .auth-brand strong,body .brand-copy strong { display:flex; align-items:center; gap:10px; font-family:BrandInter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; font-size:22px; font-weight:600; letter-spacing:-.025em; white-space:nowrap; }
 body .brand-copy strong { font-size:20px; }
-body .auth-brand strong::before,body .brand-copy strong::before { content:''; display:block; flex:0 0 3px; width:3px; height:20px; border-radius:2px; background:#6672e8; }
+body .auth-brand strong::before { content:''; display:block; flex:0 0 3px; width:3px; height:20px; border-radius:2px; background:#6672e8; }
+body .brand-copy { display:flex; align-items:center; gap:8px; }
+body .brand-copy .brand-logo { width:29px; height:29px; flex:0 0 29px; display:block; }
 @media(max-width:360px){ .auth-brand { gap:6px; } .auth-head-actions { gap:4px; } .auth-head-actions > .auth-theme-button,.auth-head-actions > .project-link { width:34px; height:38px; } body .auth-brand strong { gap:8px; font-size:20px; } }
 
 body:not(.dark) .auth-brand strong,body:not(.dark) .brand-copy strong { color:#344578; }
