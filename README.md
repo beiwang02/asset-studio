@@ -1,6 +1,6 @@
 # GitHub 图床
 
-一个基于 GitHub 仓库管理图片、分组和 JSON 库的轻量 Web 控制台。图片与 JSON 始终存放在用户自己的 GitHub 仓库；服务端不保存业务资源。
+一个基于 GitHub 仓库管理图片、分组和 JSON 库的轻量 Web 控制台。图片与 JSON 存放在用户选择的 GitHub 资源仓库，服务端不保存业务资源。
 
 ## 功能
 
@@ -76,8 +76,6 @@ docker compose up -d --no-deps --force-recreate github-assets
 
 可在 GitHub **Settings → Applications → Authorized OAuth Apps** 撤销授权。取消授权或授权失败会返回登录页。
 
-网站源码仓库为 [beiwang02/github-assets](https://github.com/beiwang02/github-assets)，用于安装和更新程序；图片及 JSON 存放在登录用户自行选择的资源仓库中，两者不是同一个用途。授权登录不会修改部署目录的 Git remote。
-
 ## 资源仓库结构
 
 项目兼容已有的 `assets/` 或 `icons/` 图片目录，并读取所有包含 `icons` 数组的 JSON 文件。新建资源时建议使用下面的结构：
@@ -124,8 +122,6 @@ curl -fsSL https://get.docker.com | sh
 
 ### 步骤 2：Docker Compose 部署
 
-> Docker Compose 方法
-
 以下命令在服务器的 root 终端执行，部署目录固定为 `/opt/stacks/github-assets/`。
 
 ```bash
@@ -133,7 +129,7 @@ mkdir -p /opt/stacks
 git clone https://github.com/beiwang02/github-assets.git /opt/stacks/github-assets && cd /opt/stacks/github-assets && cp .env.example .env && docker compose up -d --build
 ```
 
-常用命令（先进入部署目录）：
+常用命令（先进入部署目录；更新时不要再次执行 `cp .env.example .env`，以免覆盖配置）：
 
 ```bash
 cd /opt/stacks/github-assets
@@ -192,25 +188,6 @@ volumes:
 - `read_only` 与 `no-new-privileges`：限制容器运行权限。
 
 OAuth 登录所需的 `.env` 配置见「GitHub OAuth 登录配置」；访问名单见「管理员配置」。
-
-### 更新与排错
-
-已有安装更新时，不要再次执行 `cp .env.example .env`，以免覆盖配置：
-
-```bash
-cd /opt/stacks/github-assets
-git pull --ff-only origin main
-docker compose up -d --build --force-recreate
-# 容器状态与日志
-docker compose ps
-docker compose logs -f github-assets
-# 本机接口检查（未登录响应可用于确认服务可达）
-curl http://127.0.0.1:8765/api/auth/me
-# 端口占用检查
-ss -lntp 'sport = :8765'
-```
-
-仅更新文档或安装脚本、未修改镜像内运行文件时，无需重建或重启容器。
 
 ## 管理员配置（可选）
 
