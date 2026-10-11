@@ -7,7 +7,7 @@ COPY index.html styles.css console.css ui-refresh.css responsive.css console.js 
 COPY vendor/ ./vendor/
 
 COPY fonts/ ./fonts/
-COPY icons/favicon.svg icons/favicon-16.png icons/favicon-32.png icons/favicon-48.png icons/favicon-64.png icons/favicon.ico icons/apple-touch-icon.png icons/icon-192.png icons/icon-512.png ./icons/
+COPY icons/favicon.svg icons/favicon-16.png icons/favicon-32.png icons/favicon-48.png icons/favicon-64.png icons/favicon.ico icons/apple-touch-icon.png icons/icon-192.png icons/icon-512.png icons/purplebrand.svg ./icons/
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
