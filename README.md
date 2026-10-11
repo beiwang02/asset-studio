@@ -4,7 +4,7 @@
 
 ## 功能
 
-- GitHub OAuth 登录，无需输入或在浏览器记住 Token
+- GitHub OAuth 授权登录
 - 自动识别兼容结构的图片仓库，也可创建或手动选择仓库
 - 管理 JSON 库、图片资源和图片分组
 - 上传、改名、删除图片时自动同步 JSON 引用
@@ -16,36 +16,67 @@
 ## 数据流
 
 1. 用户点击 GitHub 登录并在 GitHub 完成 OAuth 授权。
-2. 服务端仅在内存会话中使用 Token 代理 GitHub API 请求。
-3. 图片、JSON、分组和 Git 提交全部写入用户自己的 GitHub 仓库。
-4. 服务端重启或用户退出后，会话 Token 失效；不会保存到数据库或业务文件。
+2. 服务端通过内存会话中的 OAuth 授权凭据代理 GitHub API 请求。
+3. 图片、JSON、分组和 Git 提交全部写入用户选择的 GitHub 资源仓库。
+4. 会话过期、用户退出或服务端重启后需重新授权；会话及其授权凭据不写入数据库或业务文件。
 
 ## GitHub OAuth 登录配置
 
-本项目仅支持 GitHub OAuth 登录。登录按钮始终可点击；未配置时点击仅显示可关闭的配置提示及创建 OAuth App 直达链接，配置后点击进入真实 GitHub OAuth 授权流程。
+登录前需由部署者创建 GitHub OAuth App 并配置服务器。未配置时，登录按钮会显示配置提示和创建应用的链接；配置完成后点击按钮进入 GitHub 授权页面。
 
-[直接创建 GitHub OAuth App](https://github.com/settings/applications/new)（Settings → Developer settings → OAuth Apps → New OAuth App）：
+### 1. 创建 OAuth App
 
-- Homepage URL：`https://your-domain.example`
-- Authorization callback URL：`https://your-domain.example/api/auth/github/callback`
+打开 [GitHub OAuth App 创建页面](https://github.com/settings/applications/new)，填写：
 
-以下 `https://your-domain.example` 仅为占位示例，请将所有出现位置替换为实际部署域名，并保持回调路径 `/api/auth/github/callback` 不变。仅在服务器 `.env` 中手动填写（不要提交真实密钥）：
+| 字段 | 填写内容 |
+| --- | --- |
+| Application name | 自定义应用名称，例如 `GitHub 图床` |
+| Homepage URL | 网站实际对外访问地址，例如 `https://your-domain.example` |
+| Authorization callback URL | 同一域名下的固定回调地址：`https://your-domain.example/api/auth/github/callback` |
+
+点击 **Register application**。创建完成后，在应用页面复制 **Client ID**，再点击 **Generate a new client secret** 生成并复制 **Client Secret**，接着填写到下一步的服务器配置中。
+
+本文的 `https://your-domain.example` 仅为占位示例，必须全部替换为真实部署网址。OAuth 登录需要浏览器可访问且地址一致的 HTTPS 网站；回调地址必须与网站同源，路径保持 `/api/auth/github/callback`。
+
+### 2. 填写服务器配置
+
+在部署服务器上编辑 `/opt/stacks/github-assets/.env`：
+
+```bash
+cd /opt/stacks/github-assets
+nano .env
+```
+
+修改以下对应项（保留其他已有配置）：
 
 ```dotenv
 PUBLIC_BASE_URL=https://your-domain.example
-GITHUB_CLIENT_ID=填写应用的客户端ID
-GITHUB_CLIENT_SECRET=填写应用的客户端密钥
+GITHUB_CLIENT_ID=填写刚复制的ClientID
+GITHUB_CLIENT_SECRET=填写刚生成的ClientSecret
 GITHUB_OAUTH_SCOPE=public_repo
 GITHUB_OAUTH_REDIRECT_URI=https://your-domain.example/api/auth/github/callback
 ```
 
-`GITHUB_OAUTH_REDIRECT_URI` 可留空，由 `PUBLIC_BASE_URL` 自动生成；显式值必须同源且使用上述回调路径。客户端 ID 和密钥都配置后，GitHub 登录按钮才会启用并跳转真实 `/api/auth/github`。HTTPS 根地址决定 Secure Cookie；反向代理须保留正确域名并提供 HTTPS。
+`GITHUB_OAUTH_REDIRECT_URI` 也可留空，由 `PUBLIC_BASE_URL` 自动推导上述回调地址；若显式填写，必须与 GitHub OAuth App 中的回调地址一致。`public_repo` 授权范围涵盖账号可访问的公开仓库，**并非仅授权所选的一个仓库**；组织策略仍可能限制访问。
 
-修改 `.env` 后在 `/opt/stacks/github-assets` 执行 `docker compose up -d --no-deps --force-recreate github-assets`，普通 restart 不会重新加载 env。若同时更新源码，先 `docker compose build github-assets`。OAuth-only 模式强制关闭 Token 登录；旧 `ENABLE_TOKEN_LOGIN` 变量已弃用，即使真实环境仍为 true 也不会启用旧端点。
+Client Secret 只填服务器 `.env`，不要发给别人、上传 Git 或放进公开归档、截图。
 
-授权后可直接管理公开资源仓库，无需另填 PAT。`public_repo` 涵盖账号可访问的公开仓库，**并非只授权一个仓库**；组织策略仍可能限制访问。OAuth 令牌只存在服务器内存，不写 localStorage、数据库或业务文件，服务重启后需重新授权。旧浏览器记住的 Token 会被定向移除，既有仓库选择不清除；有效 Cookie 会话仍沿用既有校验。可在 GitHub **Settings → Applications → Authorized OAuth Apps** 撤销授权。取消或错误会返回登录页，不会自动循环授权。
+### 3. 应用配置并登录
 
-应用源码是 `https://github.com/beiwang02/github-assets`（真实项目源码链接，不是配置示例），用户图片数据仓库由用户自行选择，例如 `your-github-username/your-assets-repo`；授权登录不改变 Git remote 或用户既有仓库选择，自动识别和允许名单继续生效。
+保存 `.env` 后，在部署目录执行：
+
+```bash
+cd /opt/stacks/github-assets
+docker compose up -d --no-deps --force-recreate github-assets
+```
+
+这一步让容器重新读取环境配置；普通 `docker compose restart` 不会重新加载 `.env`。仅修改这些配置不需要构建镜像。
+
+刷新网站 → 点击 **GitHub 登录** → 在 GitHub 核对应用并批准授权 → 返回网站后选择或创建自己的图片资源仓库，即可开始使用。
+
+可在 GitHub **Settings → Applications → Authorized OAuth Apps** 撤销授权。取消授权或授权失败会返回登录页。
+
+网站源码仓库为 [beiwang02/github-assets](https://github.com/beiwang02/github-assets)，用于安装和更新程序；图片及 JSON 存放在登录用户自行选择的资源仓库中，两者不是同一个用途。授权登录不会修改部署目录的 Git remote。
 
 ## 资源仓库结构
 
@@ -157,44 +188,10 @@ volumes:
 ```
 
 - `8765:8765`：宿主机和容器均使用 `8765` 端口。
-- `access-policy`：仅保存管理员访问策略，不保存图片、JSON 或 Token。
+- `access-policy`：仅保存管理员访问策略，不保存图片、JSON 或 OAuth 授权凭据。
 - `read_only` 与 `no-new-privileges`：限制容器运行权限。
 
-默认不需要修改 `.env`。域名反向代理和排错见下方说明；访问名单见「管理员配置」。
-
-### 域名与 HTTPS 反向代理（可选）
-
-架构：浏览器 → Nginx / Caddy（HTTPS）→ 容器 `:8765`。服务不依赖 Node、数据库、Redis、OAuth App 或 systemd；以下 systemd 命令仅用于宿主机 Nginx。
-
-如需域名，在 `.env` 设置 `PUBLIC_BASE_URL=https://img.example.com`。仅支持 OAuth，`ENABLE_TOKEN_LOGIN` 已弃用并被忽略。不要将用户登录 Token 写入 `.env`、Git 仓库或截图。
-
-Nginx 示例（需要先安装 Nginx 和 Certbot，并将域名解析到服务器）：
-
-```nginx
-server {
-    listen 80;
-    server_name img.example.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:8765;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-
-```bash
-sudo nginx -t
-sudo systemctl reload nginx
-sudo certbot --nginx -d img.example.com
-# 应用 .env 修改（含 PUBLIC_BASE_URL）
-docker compose up -d --build --force-recreate
-```
-
-只通过本机反代访问时，可设置 `GITHUB_IMAGE_HOST_BIND=127.0.0.1`，避免公网直接访问容器端口。
+OAuth 登录所需的 `.env` 配置见「GitHub OAuth 登录配置」；访问名单见「管理员配置」。
 
 ### 更新与排错
 
