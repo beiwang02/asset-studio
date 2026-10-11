@@ -1,6 +1,6 @@
 # Asset Studio
 
-Asset Studio 是一个基于 GitHub 仓库管理图片、分组和 JSON 库的轻量 Web 控制台。图片与 JSON 存放在用户选择的 GitHub 资源仓库，服务端不保存业务资源。
+Asset Studio 是一个基于 GitHub 仓库管理图片与 JSON 库的轻量 Web 控制台。图片与 JSON 存放在用户选择的 GitHub 资源仓库，服务端不保存业务资源。
 
 ## 功能
 
