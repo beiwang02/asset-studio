@@ -584,3 +584,16 @@ body :is(.asset-name-row,.quick-asset-name-row) b{flex:1;min-width:0;overflow:hi
 @media(max-width:700px){
  body .json-reference-copy{padding-inline:1px}
 }
+
+/* Release 142: JSON-only inset ratio and independent, in-card selection target. */
+body .json-reference-row{grid-template-columns:44px 60px minmax(0,1fr);column-gap:0!important}
+body .json-reference-thumb{width:60px;height:60px;margin-inline-start:0;padding:0;position:relative}
+body .json-reference-thumb img{position:absolute;left:14%;top:14%;width:72%;height:72%;max-width:72%;max-height:72%;object-fit:contain;object-position:center}
+body .json-reference-row::after{inset:0}
+body .json-reference-copy{padding-inline:5px 0}
+@media(max-width:700px){
+ body .json-reference-list,body.dark .json-reference-list{column-gap:6px}
+ body .json-reference-row{grid-template-columns:44px 40px minmax(0,1fr);min-height:66px;padding-inline:0!important}
+ body .json-reference-thumb{width:40px;height:40px}
+ body .json-reference-copy{padding-inline:5px 0}
+}
