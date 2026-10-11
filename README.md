@@ -28,11 +28,12 @@ Asset Studio 是一个基于 GitHub 仓库管理图片与 JSON 库的轻量 Web 
 
 打开 [GitHub OAuth App 创建页面](https://github.com/settings/applications/new)，填写：
 
-| 字段 | 填写内容 |
-| --- | --- |
-| Application name | 自定义应用名称，例如 `Asset Studio`；名称中不要包含 `GitHub` |
-| Homepage URL | 网站实际对外访问地址，例如 `https://your-domain.example` |
-| Authorization callback URL | 同一域名下的固定回调地址：`https://your-domain.example/api/auth/github/callback` |
+| 字段 | 必填 / 选填 | 填写内容 |
+| --- | --- | --- |
+| Application name | 必填 | 自定义应用名称，例如 `Asset Studio` |
+| Homepage URL | 必填 | 网站实际对外访问地址，例如 `https://your-domain.example` |
+| Application description | 选填 | 应用说明，可留空 |
+| Redirect URI（回调地址；旧界面称 Authorization callback URL） | 必填 | 填写完整网站地址加 `/api/auth/github/callback`，例如 `https://your-domain.example/api/auth/github/callback`，不使用通配符 |
 
 点击 **Register application**。创建完成后，在应用页面复制 **Client ID**，再点击 **Generate a new client secret** 生成并复制 **Client Secret**，接着填写到下一步的服务器配置中。
 
@@ -47,7 +48,7 @@ cd /opt/stacks/asset-studio
 nano .env
 ```
 
-修改以下对应项（保留其他已有配置）：
+仅在服务器 `.env` 中修改以下对应项（保留其他已有配置）：`PUBLIC_BASE_URL` 必填真实对外网站地址，`GITHUB_CLIENT_ID` 与 `GITHUB_CLIENT_SECRET` 必填；`GITHUB_OAUTH_SCOPE` 可保留默认 `public_repo`；`GITHUB_OAUTH_REDIRECT_URI` 选填，可留空自动推导。
 
 ```dotenv
 PUBLIC_BASE_URL=https://your-domain.example
@@ -57,7 +58,7 @@ GITHUB_OAUTH_SCOPE=public_repo
 GITHUB_OAUTH_REDIRECT_URI=https://your-domain.example/api/auth/github/callback
 ```
 
-`GITHUB_OAUTH_REDIRECT_URI` 也可留空，由 `PUBLIC_BASE_URL` 自动推导上述回调地址；若显式填写，必须与 GitHub OAuth App 中的回调地址一致。`public_repo` 授权范围涵盖账号可访问的公开仓库，**并非仅授权所选的一个仓库**；组织策略仍可能限制访问。
+`GITHUB_OAUTH_REDIRECT_URI` 也可留空，由 `PUBLIC_BASE_URL` 自动推导上述回调地址；若显式填写，必须与 GitHub OAuth App 中的回调地址完全一致，并与 `PUBLIC_BASE_URL` 同源（协议、主机、端口一致），路径固定为 `/api/auth/github/callback`，不附加查询参数或片段。`public_repo` 授权范围涵盖账号可访问的公开仓库，**并非仅授权所选的一个仓库**；组织策略仍可能限制访问。
 
 Client Secret 只填服务器 `.env`，不要发给别人、上传 Git 或放进公开归档、截图。
 
@@ -71,6 +72,8 @@ docker compose up -d --no-deps --force-recreate asset-studio
 ```
 
 这一步让容器重新读取环境配置；普通 `docker compose restart` 不会重新加载 `.env`。仅修改这些配置不需要构建镜像。
+
+> **绑定或更换域名时：** 必须同时修改 GitHub OAuth App 的 **Homepage URL**、**Redirect URI（旧界面称 Authorization callback URL）**，以及服务器 `.env` 的 **PUBLIC_BASE_URL**；若 **GITHUB_OAUTH_REDIRECT_URI** 已显式填写，也要同步修改（留空则自动推导）。例如从 `https://old-domain.example` 改为 `https://your-domain.example`，Homepage URL 与 PUBLIC_BASE_URL 均改为新网站地址，回调地址改为 `https://your-domain.example/api/auth/github/callback`；若实际对外 URL 含非默认端口，以上地址须保留相同协议、主机和端口。保存后执行上面的 `docker compose up -d --no-deps --force-recreate asset-studio` 使环境变量生效。原先用 IP 地址访问、后来绑定域名时也一样，不能只改 DNS 而忘记更新 OAuth 配置。
 
 刷新网站 → 点击 **GitHub 登录** → 在 GitHub 核对应用并批准授权 → 返回网站后选择或创建自己的图片资源仓库，即可开始使用。
 
