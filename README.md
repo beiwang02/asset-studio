@@ -30,7 +30,7 @@
 
 | 字段 | 填写内容 |
 | --- | --- |
-| Application name | 自定义应用名称，例如 `GitHub 图床` |
+| Application name | 自定义应用名称，例如 `图片资源管理`；名称中不要包含 `GitHub` |
 | Homepage URL | 网站实际对外访问地址，例如 `https://your-domain.example` |
 | Authorization callback URL | 同一域名下的固定回调地址：`https://your-domain.example/api/auth/github/callback` |
 
