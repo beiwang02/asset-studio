@@ -536,3 +536,17 @@ body.dark .auth-page .auth-card .auth-login-intro { color:#aab3c4; }
 body:not(.dark) .auth-page { color:#202738; background:radial-gradient(circle at 13% 12%,rgba(101,112,255,.12),transparent 32%),radial-gradient(circle at 88% 82%,rgba(38,171,169,.07),transparent 28%),#f5f6fc; }
 body:not(.dark) .auth-page .auth-card { background:#fff; border-color:#e1e4ef; box-shadow:0 18px 55px #4b4a8615; }
 .auth-page .auth-brand strong::before { content:none; display:none; }
+
+/* Release136: approved login-only visual refinements. */
+.auth-page .auth-card { width:min(100%,480px); }
+@media(max-width:700px){ .auth-page { padding-inline:12px; } }
+.auth-page .auth-card .btn-github { display:flex; align-items:center; justify-content:center; gap:8px; }
+.auth-page .auth-card .btn-github .oauth-github-icon { width:20px; height:20px; flex:0 0 20px; fill:currentColor; stroke:none; }
+body .auth-page .auth-head-actions :is(.auth-theme-button,.project-link) { width:34px; min-width:34px; height:34px; min-height:34px; border:1px solid #e8ecf3; border-radius:10px; background:#fff; color:#162033; }
+body.dark .auth-page .auth-head-actions :is(.auth-theme-button,.project-link) { background:#1b293f; color:#e4eaf5; border-color:#34435b; }
+body .auth-page .auth-head-actions .auth-theme-button { font-size:20px; }
+body .auth-page .auth-head-actions .project-link { font-size:17px; }
+body .auth-page .auth-head-actions svg { width:18px; height:18px; }
+body.auth-screen #modalRoot .modal-actions a.btn[href="https://github.com/settings/applications/new"] { text-decoration:none; }
+
+.auth-page .auth-card .btn-github, .auth-page .auth-card .btn-github:is(:hover,:active,:focus,:focus-visible) { box-shadow:none; }
