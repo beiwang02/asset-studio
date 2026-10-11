@@ -577,8 +577,9 @@ body .json-reference-thumb{width:60px;height:60px}
 /* Release 131: names use all remaining space; only the secondary group is capped.
    Keep each view's typography and controls: differing structures need not truncate
    at an artificially identical width or character count. */
-body .quick-asset .quick-asset-name-row{padding-inline:0 4px;gap:4px}
-body .quick-asset-name-row small{order:-1;flex:0 1 auto;max-width:28%}
+body .quick-asset .quick-asset-name-row{padding-inline:0 2px;gap:2px}
+body .quick-asset-name-row small{order:-1;flex:0 1 auto;max-width:28%;box-sizing:border-box;padding:0 2px;border:1px solid #dddde9;border-radius:4px;background:#f0eff6}
+body.dark .quick-asset-name-row small{border-color:#454559;background:#2c2c3d;color:var(--muted)}
 body :is(.asset-name-row,.quick-asset-name-row) b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:700px){
  body .json-reference-copy{padding-inline:1px}
