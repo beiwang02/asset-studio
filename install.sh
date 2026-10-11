@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# GitHub 图床一键部署脚本：Ubuntu/Debian + Docker Compose
+# Asset Studio 一键部署脚本：Ubuntu/Debian + Docker Compose
 # 从任意工作目录调用时，始终复制本脚本所在的项目根目录。
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "$SCRIPT_DIR"
-APP_DIR="${APP_DIR:-/opt/stacks/github-assets}"
+APP_DIR="${APP_DIR:-/opt/stacks/asset-studio}"
 PORT="${GITHUB_IMAGE_HOST_PORT:-8765}"
 
 if [[ "${EUID}" -ne 0 ]]; then echo "请使用 root 运行此脚本。" >&2; exit 1; fi

@@ -1,4 +1,4 @@
-/* GitHub Assets UI Refresh — production presentation layer */
+/* Asset Studio UI Refresh — production presentation layer */
 :root{--ui-control-h:40px;--ui-radius:11px;--ui-gap:12px;--ui-action-gap:8px;--ui-toolbar-action-gap:4px;--ui-icon-action-gap:0px;--ui-focus:#8b70ee;--ui-canvas:#f4f6fb;--ui-line-focus:#cfd5fd;--ui-selection-bg:#f4f5ff;--ui-selection-ink:var(--primary);--ui-check-bg:var(--primary);--ui-check-mark:#fff;--ui-selection-shadow:rgba(89,101,242,.1)}
 *,*:before,*:after{box-sizing:border-box}
 body{background:var(--ui-canvas);overflow-x:hidden}

@@ -1,4 +1,4 @@
-"""Rebuild the hand-drawn GitHub Assets icon; requires Pillow only.
+"""Rebuild the hand-drawn Asset Studio icon; requires Pillow only.
 SVG and raster share a 64-unit canvas. Touch/PWA icons stay fully opaque.
 Run: python3 icons/build_icons.py (from any working directory).
 """

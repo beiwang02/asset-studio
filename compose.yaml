@@ -1,9 +1,9 @@
 services:
-  github-assets:
+  asset-studio:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: github-assets
+    container_name: asset-studio
     restart: unless-stopped
     env_file:
       - .env

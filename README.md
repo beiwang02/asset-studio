@@ -1,6 +1,6 @@
-# GitHub 图床
+# Asset Studio
 
-一个基于 GitHub 仓库管理图片、分组和 JSON 库的轻量 Web 控制台。图片与 JSON 存放在用户选择的 GitHub 资源仓库，服务端不保存业务资源。
+Asset Studio 是一个基于 GitHub 仓库管理图片、分组和 JSON 库的轻量 Web 控制台。图片与 JSON 存放在用户选择的 GitHub 资源仓库，服务端不保存业务资源。
 
 ## 功能
 
@@ -30,7 +30,7 @@
 
 | 字段 | 填写内容 |
 | --- | --- |
-| Application name | 自定义应用名称，例如 `图片资源管理`；名称中不要包含 `GitHub` |
+| Application name | 自定义应用名称，例如 `Asset Studio`；名称中不要包含 `GitHub` |
 | Homepage URL | 网站实际对外访问地址，例如 `https://your-domain.example` |
 | Authorization callback URL | 同一域名下的固定回调地址：`https://your-domain.example/api/auth/github/callback` |
 
@@ -40,10 +40,10 @@
 
 ### 2. 填写服务器配置
 
-在部署服务器上编辑 `/opt/stacks/github-assets/.env`：
+在部署服务器上编辑 `/opt/stacks/asset-studio/.env`：
 
 ```bash
-cd /opt/stacks/github-assets
+cd /opt/stacks/asset-studio
 nano .env
 ```
 
@@ -66,8 +66,8 @@ Client Secret 只填服务器 `.env`，不要发给别人、上传 Git 或放进
 保存 `.env` 后，在部署目录执行：
 
 ```bash
-cd /opt/stacks/github-assets
-docker compose up -d --no-deps --force-recreate github-assets
+cd /opt/stacks/asset-studio
+docker compose up -d --no-deps --force-recreate asset-studio
 ```
 
 这一步让容器重新读取环境配置；普通 `docker compose restart` 不会重新加载 `.env`。仅修改这些配置不需要构建镜像。
@@ -122,21 +122,21 @@ curl -fsSL https://get.docker.com | sh
 
 ### 步骤 2：Docker Compose 部署
 
-以下命令在服务器的 root 终端执行，部署目录固定为 `/opt/stacks/github-assets/`。
+以下命令在服务器的 root 终端执行，部署目录固定为 `/opt/stacks/asset-studio/`。
 
 ```bash
 mkdir -p /opt/stacks
-git clone https://github.com/beiwang02/github-assets.git /opt/stacks/github-assets && cd /opt/stacks/github-assets && cp .env.example .env && docker compose up -d --build
+git clone https://github.com/beiwang02/asset-studio.git /opt/stacks/asset-studio && cd /opt/stacks/asset-studio && cp .env.example .env && docker compose up -d --build
 ```
 
 常用命令（先进入部署目录；更新时不要再次执行 `cp .env.example .env`，以免覆盖配置）：
 
 ```bash
-cd /opt/stacks/github-assets
+cd /opt/stacks/asset-studio
 # 查看状态
 docker compose ps
 # 查看日志
-docker compose logs -f github-assets
+docker compose logs -f asset-studio
 # 更新版本
 git pull --ff-only
 docker compose up -d --build
@@ -146,12 +146,12 @@ docker compose up -d --build
 
 ```bash
 mkdir -p /opt/stacks
-git clone https://github.com/beiwang02/github-assets.git /opt/stacks/github-assets
-cd /opt/stacks/github-assets
+git clone https://github.com/beiwang02/asset-studio.git /opt/stacks/asset-studio
+cd /opt/stacks/asset-studio
 sudo bash install.sh
 ```
 
-脚本自动检查并安装 Docker、保留已有 `.env`，然后构建启动服务。两种方式的编排文件位置一致：`/opt/stacks/github-assets/compose.yaml`。
+脚本自动检查并安装 Docker、保留已有 `.env`，然后构建启动服务。两种方式的编排文件位置一致：`/opt/stacks/asset-studio/compose.yaml`。
 
 ### Compose 编排
 
@@ -159,11 +159,11 @@ sudo bash install.sh
 
 ```yaml
 services:
-  github-assets:
+  asset-studio:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: github-assets
+    container_name: asset-studio
     restart: unless-stopped
     env_file:
       - .env
