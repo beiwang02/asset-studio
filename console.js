@@ -572,7 +572,7 @@ document.addEventListener('click', async e => {
   if(action==='oauth-login'){
     if(S.oauthEnabled)return;
     e.preventDefault();
-    openC(`<div class="modal-head"><div><h2>配置 GitHub OAuth</h2><p>需先创建并配置 GitHub OAuth App，才能使用 GitHub 登录。</p></div><button type="button" class="modal-close" data-action="close-modal" aria-label="关闭">×</button></div><div class="modal-body"><p class="field-help">部署者创建 OAuth App 后，请配置 Client ID、Client Secret 和回调地址，再重新加载应用配置。</p></div><div class="modal-actions"><button type="button" class="btn" data-action="close-modal">关闭</button><a class="btn btn-primary" href="https://github.com/settings/applications/new" target="_blank" rel="noopener noreferrer">创建 OAuth App</a></div>`);
+    openC(`<div class="modal-head"><div><h2>配置 GitHub OAuth</h2><p>请先创建 OAuth App，并在服务器配置 Client ID 和 Client Secret。</p></div><button type="button" class="modal-close" data-action="close-modal" aria-label="关闭">×</button></div><div class="modal-actions"><button type="button" class="btn" data-action="close-modal">关闭</button><a class="btn btn-primary" href="https://github.com/settings/applications/new" target="_blank" rel="noopener noreferrer">创建 OAuth App</a></div>`);
     return;
   }
   if(action==='modal-backdrop'){if(e.target===target)closeC();return;}
