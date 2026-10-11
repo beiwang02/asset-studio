@@ -33,7 +33,13 @@ Asset Studio 是一个基于 GitHub 仓库管理图片与 JSON 库的轻量 Web 
 | Application name | 必填 | 自定义应用名称，例如 `Asset Studio` |
 | Homepage URL | 必填 | 网站实际对外访问地址，例如 `https://your-domain.example` |
 | Application description | 选填 | 应用说明，可留空 |
-| Redirect URI（回调地址；旧界面称 Authorization callback URL） | 必填 | 填写完整网站地址加 `/api/auth/github/callback`，例如 `https://your-domain.example/api/auth/github/callback`，不使用通配符 |
+| Redirect URI | 必填 | 填写下方完整回调地址 |
+
+Redirect URI 为回调地址，旧界面称 **Authorization callback URL**。将下方示例域名替换为实际网站域名，保留固定路径，不使用通配符：
+
+```text
+https://your-domain.example/api/auth/github/callback
+```
 
 点击 **Register application**。创建完成后，在应用页面复制 **Client ID**，再点击 **Generate a new client secret** 生成并复制 **Client Secret**，接着填写到下一步的服务器配置中。
 
