@@ -1,0 +1,28 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),crypto=require('node:crypto'),path=require('node:path');
+const source=fs.readFileSync('server.mjs','utf8').replace(/^import .*;\n/gm,'').replace('import.meta.url',JSON.stringify('file:///fixture/server.mjs'));
+async function boot(){
+ let handler,refreshCalls=0,apiCalls=0,mode='ok',release; const pair={access_token:'access-old',refresh_token:'refresh-old',expires_in:30,refresh_token_expires_in:9999,token_type:'bearer'};
+ const response=(status,data)=>({status,ok:status>=200&&status<300,json:async()=>data,arrayBuffer:async()=>Buffer.from(JSON.stringify(data))});
+ const context={URL,URLSearchParams,Buffer,AbortSignal,console:{log(){}},process:{env:{PUBLIC_BASE_URL:'https://fixture.test',GITHUB_CLIENT_ID:'client-fixture',GITHUB_CLIENT_SECRET:'secret-fixture'}},dirname:path.dirname,readFile:async()=>{throw Object.assign(Error(),{code:'ENOENT'})},randomBytes:crypto.randomBytes,timingSafeEqual:crypto.timingSafeEqual,setInterval:()=>({unref(){}}),http:{createServer:fn=>{handler=fn;return{listen(){}}}},fetch:async(url,opts)=>{
+ if(String(url).includes('access_token')){const input=JSON.parse(opts.body);if(!input.grant_type)return response(200,pair);refreshCalls++;assert.equal(input.grant_type,'refresh_token');assert.equal(input.client_id,'client-fixture');assert.equal(input.client_secret,'secret-fixture');assert(!('scope'in input));if(mode==='hold')await new Promise(r=>release=r);if(mode==='network')throw Error('secret-fixture');if(mode==='429'||mode==='503')return response(+mode,{error:'secret-fixture'});if(mode==='invalid')return response(200,{error:'bad_refresh_token'});if(mode==='grant')return response(400,{error:'invalid_grant'});if(mode==='malformed')return response(200,{access_token:'bad'});return response(200,{access_token:'access-new',refresh_token:'refresh-new',expires_in:28800,refresh_token_expires_in:15897600});}
+ apiCalls++;return response(mode==='api401'?401:200,{login:'member'});
+ }};vm.createContext(context);const api=await vm.runInContext('(async()=>{'+source+';return {sessions,createSession};})()',context);
+ const sid=api.createSession(pair,{login:'member'}),auth=api.sessions.get(sid);
+ async function request(route='/api/github?url=https://api.github.com/user',method='GET'){let status,data;const headers={};await handler({url:route,method,headers:{cookie:'gh_session='+sid,'x-csrf-token':auth.csrf,origin:'https://fixture.test'},async *[Symbol.asyncIterator](){yield Buffer.from('{}')}},{headersSent:false,setHeader(k,v){headers[k]=v},writeHead(s,h){status=s;Object.assign(headers,h);this.headersSent=true},end(v){data=String(v||'')}});assert(!/access-old|access-new|refresh-old|refresh-new|secret-fixture/.test(data));return{status,data,headers};}
+ return{...api,auth,request,setMode:m=>mode=m,release:()=>release(),get refreshCalls(){return refreshCalls},get apiCalls(){return apiCalls}};
+}
+(async()=>{
+ let b=await boot();const ttl=b.auth.expires;assert.equal((await b.request()).status,200);assert.equal(b.auth.token,'access-new');assert.equal(b.auth.refreshToken,'refresh-new');assert.equal(b.auth.expires,ttl);assert(b.auth.tokenExpires>Date.now());await b.request('/api/auth/me');assert.equal(b.refreshCalls,1);
+ b=await boot();b.auth.tokenExpires=Date.now()-1;assert.equal((await b.request()).status,200);
+ b=await boot();b.setMode('hold');const requests=Array.from({length:8},()=>b.request());await new Promise(setImmediate);assert.equal(b.refreshCalls,1);b.release();assert((await Promise.all(requests)).every(r=>r.status===200));
+ for(const mode of ['network','429','503','malformed']){b=await boot();b.setMode(mode);assert.equal((await b.request()).status,503);assert.equal(b.sessions.size,1);assert.equal(b.auth.refreshToken,'refresh-old');await b.request();assert.equal(b.refreshCalls,1);b.auth.refreshRetryAfter=0;b.setMode('ok');assert.equal((await b.request()).status,200)}
+ for(const mode of ['invalid','grant']){b=await boot();b.setMode(mode);assert.equal((await b.request()).status,401);assert.equal(b.sessions.size,0)}
+ b=await boot();b.auth.refreshExpires=0;assert.equal((await b.request()).status,401);assert.equal(b.refreshCalls,0);
+ b=await boot();delete b.auth.refreshToken;b.auth.tokenExpires=null;assert.equal((await b.request()).status,200);assert.equal(b.refreshCalls,0);
+ b=await boot();delete b.auth.refreshToken;b.auth.tokenExpires=0;assert.equal((await b.request()).status,200);b.auth.tokenExpires=Date.now()-1;assert.equal((await b.request()).status,401);
+ b=await boot();b.setMode('hold');const pending=b.request();await new Promise(setImmediate);assert.equal((await b.request('/api/auth/logout','POST')).status,200);b.release();assert.equal((await pending).status,401);assert.equal(b.sessions.size,0);assert.equal(b.apiCalls,0);
+ b=await boot();b.auth.tokenExpires=null;b.setMode('api401');assert.equal((await b.request()).status,401);assert.equal(b.refreshCalls,1);assert.equal(b.apiCalls,2);
+ b=await boot();b.auth.tokenExpires=null;b.setMode('api401');assert.equal((await b.request('/api/github?url=https://api.github.com/repos/a/b/git/commits','POST')).status,401);assert.equal(b.apiCalls,1);assert.equal(b.refreshCalls,0);
+ b=await boot();assert.equal((await b.request('/api/github?url=https://evil.test/user')).status,403);assert.equal(b.refreshCalls,0);
+ console.log('PASS OAuth refresh: deadlines, rotation, old sessions, singleflight, transient preservation/backoff, invalid grant, expired refresh, logout race, bounded GET retry, no write replay, no credential disclosure, whitelist');
+})().catch(e=>{console.error(e);process.exitCode=1});

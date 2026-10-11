@@ -24,6 +24,8 @@ Asset Studio 是一个基于 GitHub 仓库管理图片与 JSON 库的轻量 Web 
 
 登录前需由部署者创建 GitHub OAuth App 并配置服务器。未配置时，登录按钮会显示配置提示和创建应用的链接；配置完成后点击按钮进入 GitHub 授权页面。
 
+OAuth 到期令牌会在代理请求前自动刷新并轮换，凭据仅保存在服务器内存；会话仍为 8 小时，退出、授权失效或服务重启后需重新登录，旧的非到期令牌仍兼容。
+
 ### 1. 创建 OAuth App
 
 打开 [GitHub OAuth App 创建页面](https://github.com/settings/applications/new)，填写：
@@ -33,13 +35,7 @@ Asset Studio 是一个基于 GitHub 仓库管理图片与 JSON 库的轻量 Web 
 | Application name | 必填 | 自定义应用名称，例如 `Asset Studio` |
 | Homepage URL | 必填 | 网站实际对外访问地址，例如 `https://your-domain.example` |
 | Application description | 选填 | 应用说明，可留空 |
-| Redirect URI | 必填 | 填写下方完整回调地址 |
-
-Redirect URI 为回调地址，旧界面称 **Authorization callback URL**。将下方示例域名替换为实际网站域名，保留固定路径，不使用通配符：
-
-```text
-https://your-domain.example/api/auth/github/callback
-```
+| Redirect URI | 必填 | `https://your-domain.example/api/auth/github/callback`，替换为实际域名，保留固定路径，不使用通配符（旧界面称 Authorization callback URL） |
 
 点击 **Register application**。创建完成后，在应用页面复制 **Client ID**，再点击 **Generate a new client secret** 生成并复制 **Client Secret**，接着填写到下一步的服务器配置中。
 
