@@ -597,3 +597,8 @@ body .json-reference-copy{padding-inline:5px 0}
  body .json-reference-thumb{width:40px;height:40px}
  body .json-reference-copy{padding-inline:5px 0}
 }
+
+/* Release 145: approved lightweight recent group badge. */
+body .quick-asset .quick-asset-name-row{gap:4px}
+body .quick-asset-name-row small{border-color:transparent;border-radius:3px;background:#f5f4f8}
+body.dark .quick-asset-name-row small{border-color:transparent;background:#282832;color:var(--muted)}
