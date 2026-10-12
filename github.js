@@ -155,10 +155,18 @@ class GitHubClient {
   async imageHistory(snap, images, previous) {
     const times={};
     const before=new Map((previous?.snapshot?.entries||[]).map(e=>[e.path,e.sha]));
-    for(const entry of [...images,...snap.docs]) {
-      const prior=previous?.imageTimes?.[entry.path];
-      times[entry.path]=prior&&!prior.retryable&&before.get(entry.path)===entry.sha?prior:await this.pathHistory(entry.path,snap.head);
-    }
+    const entries=[...images,...snap.docs], results=new Array(entries.length);
+    let next=0;
+    const worker=async()=>{
+      while(next<entries.length) {
+        const index=next++, entry=entries[index];
+        const prior=previous?.imageTimes?.[entry.path];
+        results[index]=prior&&!prior.retryable&&before.get(entry.path)===entry.sha?prior:await this.pathHistory(entry.path,snap.head);
+      }
+    };
+    await Promise.all(Array.from({length:Math.min(4,entries.length)},worker));
+    // Preserve entry order, including warning order, regardless of completion order.
+    entries.forEach((entry,index)=>{times[entry.path]=results[index];});
     return times;
   }
   async snapshot(head=null, previous=null) {
