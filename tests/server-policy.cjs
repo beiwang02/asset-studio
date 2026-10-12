@@ -10,7 +10,7 @@ async function boot({stored,readError,fail=false}={}){
 (async()=>{
  for(const stored of ['{',JSON.stringify({allowAll:'false',allowed:[]}),JSON.stringify({allowAll:false,allowed:[7]})])await assert.rejects(boot({stored}),/无法安全加载/);
  await assert.rejects(boot({readError:Object.assign(Error(),{code:'EACCES'})}),/无法安全加载/);
- const b=await boot(),admin=b.createSession({access_token:'fake'},{login:'admin'}),user=b.createSession({access_token:'fake'},{login:'member'}),csrf=b.sessions.get(admin).csrf;
+ const b=await boot(),admin=b.createSession('fake',{login:'admin'}),user=b.createSession('fake',{login:'member'}),csrf=b.sessions.get(admin).csrf;
  for(const method of ['GET','PUT']){assert.equal((await b.request('/api/admin/policy',method)).status,401);assert.equal((await b.request('/api/admin/policy',method,user)).status,403);}
  const policy={allowAll:false,allowed:[' ADMIN ']};
  assert.equal((await b.request('/api/admin/policy','PUT',admin,policy)).status,403);
@@ -20,7 +20,7 @@ async function boot({stored,readError,fail=false}={}){
  assert.equal((await b.request('/api/admin/policy','PUT',admin,policy,{'x-csrf-token':csrf})).status,200);
  assert.equal(b.sessions.has(user),false);assert.equal(b.sessions.has(admin),true);assert.equal((await b.request('/api/github','GET',user)).status,401);
  assert.equal((await boot({stored:b.saved})).accessFor('member').allowed,false);
- const failed=await boot({fail:true}),a=failed.createSession({access_token:'fake'},{login:'admin'}),u=failed.createSession({access_token:'fake'},{login:'member'});
+ const failed=await boot({fail:true}),a=failed.createSession('fake',{login:'admin'}),u=failed.createSession('fake',{login:'member'});
  assert.equal((await failed.request('/api/admin/policy','PUT',a,policy,{'x-csrf-token':failed.sessions.get(a).csrf})).status,502);assert.equal(failed.accessFor('member').allowed,true);assert(failed.sessions.has(u));assert.equal(failed.saved,undefined);
  for(const p of ['assets','a-b/c_d','A123','a.b','a%20b','%E5%9B%BE'])assert(b.allowedAPI(new URL('https://api.github.com/repos/o/r/contents/'+p+'/.gitkeep'),'PUT'));
  for(const p of ['a//b','a%2Fb','a%5Cb','%00','%7f','%C2%85','%252f','%25252f','%252e%252e','%ZZ'])assert(!b.allowedAPI(new URL('https://api.github.com/repos/o/r/contents/'+p+'/.gitkeep'),'PUT'),p);
