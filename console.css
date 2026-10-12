@@ -552,3 +552,11 @@ body .auth-page .auth-head-actions svg { width:18px; height:18px; }
 body.auth-screen #modalRoot .modal-actions a.btn[href="https://github.com/settings/applications/new"] { text-decoration:none; }
 
 .auth-page .auth-card .btn-github, .auth-page .auth-card .btn-github:is(:hover,:active,:focus,:focus-visible) { box-shadow:none; }
+
+/* Release143: approved larger login composition only. */
+.auth-page .auth-login-heading { font-size:34px; line-height:1.2; margin-bottom:16px; }
+.auth-page .auth-card .auth-login-intro { font-size:16px; line-height:1.65; margin-bottom:30px; }
+.auth-page .auth-card .btn-github { height:54px; font-size:17px; }
+.auth-page .auth-card .btn-github .oauth-github-icon { width:22px; height:22px; flex-basis:22px; }
+.auth-page .auth-card { padding-block:30px; }
+@media(max-width:350px){ .auth-page .auth-login-heading { font-size:30px; } .auth-page .auth-card .auth-login-intro { font-size:15px; } }
