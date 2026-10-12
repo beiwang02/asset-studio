@@ -556,7 +556,14 @@ async function createRepositoryFromModal(form) {
   const repo=await currentClient().createRepository(name,description); S.repo={owner:repo.owner.login,repo:repo.name,branch:repo.default_branch||'main',assetsPath:'assets'}; localStorage.setItem('gh-image-repo',JSON.stringify(S.repo)); closeC(); await readRepo({elements:{owner:{value:S.repo.owner},repo:{value:S.repo.repo},branch:{value:S.repo.branch},assetsPath:{value:S.repo.assetsPath}}});
 }
 
-async function bootAuth(retried=false) { if(location.protocol!=='http:'&&location.protocol!=='https:'){ renderC(); return; } try { const r=await fetch('/api/auth/me',{credentials:'include'}); if(!r.ok)throw new Error('会话检查暂时失败'); const data=await r.json(); S.auth=data.user||null; S.csrf=data.csrf||''; S.oauthEnabled=Boolean(data.oauthEnabled); S.adminConfigured=Boolean(data.adminConfigured); S.isAdmin=Boolean(data.isAdmin); S.policyConfigured=Boolean(data.policyConfigured); if(S.auth) { await loadAdminPolicy(); renderC(); if(sessionStorage.getItem('gh-login-success')==='1'){ sessionStorage.removeItem('gh-login-success'); notify('已登录'); } if(S.repo.owner&&S.repo.repo) {
+let bootAuthFlight=null;
+function bootAuth() {
+  if(bootAuthFlight)return bootAuthFlight;
+  const flight=runBootAuthC(); bootAuthFlight=flight;
+  const clear=()=>{if(bootAuthFlight===flight)bootAuthFlight=null;};
+  flight.then(clear,clear); return flight;
+}
+async function runBootAuthC() { if(location.protocol!=='http:'&&location.protocol!=='https:'){ renderC(); return; } try { const r=await fetch('/api/auth/me',{credentials:'include'}); if(!r.ok)throw new Error('会话检查暂时失败'); const data=await r.json(); S.auth=data.user||null; S.csrf=data.csrf||''; S.oauthEnabled=Boolean(data.oauthEnabled); S.adminConfigured=Boolean(data.adminConfigured); S.isAdmin=Boolean(data.isAdmin); S.policyConfigured=Boolean(data.policyConfigured); if(S.auth) { await loadAdminPolicy(); renderC(); if(sessionStorage.getItem('gh-login-success')==='1'){ sessionStorage.removeItem('gh-login-success'); notify('已登录'); } if(S.repo.owner&&S.repo.repo) {
       void refreshRepositoryChoicesC();
       await readRepo({elements:Object.fromEntries(Object.entries(S.repo).map(([key,value])=>[key,{value}]))});
     } else await autoSelectRepository();

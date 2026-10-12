@@ -24,7 +24,9 @@ Asset Studio 是一个基于 GitHub 仓库管理图片与 JSON 库的轻量 Web 
 
 登录前需由部署者创建 GitHub OAuth App 并配置服务器。未配置时，登录按钮会显示配置提示和创建应用的链接；配置完成后点击按钮进入 GitHub 授权页面。
 
-授权凭据失效时需重新登录；会话仍为 8 小时，退出或服务重启后需重新登录。
+站点登录会话默认最长 **7 天**，从登录时开始固定计时，使用网站不会续期；可通过 `SESSION_TTL_DAYS` 配置为 1–30 的整数天。GitHub 返回刷新凭据时，服务端会在内存中自动更新临近到期的授权凭据，但不会延长站点会话。会话到期、主动退出、服务重启，或 GitHub 授权撤销／凭据失效且无法刷新时，需重新 GitHub 登录。
+
+七天指登录会话，不是资源保存期限；仓库资源不会因此删除。授权凭据不写入浏览器、数据库或业务文件，也不保证 GitHub 凭据本身可用七天。
 
 ### 1. 创建 OAuth App
 
@@ -36,6 +38,8 @@ Asset Studio 是一个基于 GitHub 仓库管理图片与 JSON 库的轻量 Web 
 | Homepage URL | 必填 | 网站实际对外访问地址，例如 `https://your-domain.example` |
 | Application description | 选填 | 应用说明，可留空 |
 | Redirect URI | 必填 | `https://your-domain.example/api/auth/github/callback`，替换为实际域名，保留固定路径，不使用通配符（旧界面称 Authorization callback URL） |
+
+**Expire user access tokens：推荐勾选。** 本项目支持自动刷新到期的授权凭据，可限制单个访问凭据的有效时间。自动刷新不会延长站点的七天会话。
 
 点击 **Register application**。创建完成后，在应用页面复制 **Client ID**，再点击 **Generate a new client secret** 生成并复制 **Client Secret**，接着填写到下一步的服务器配置中。
 

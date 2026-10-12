@@ -3,6 +3,10 @@ import { dirname } from 'node:path';
 import { readFile, writeFile, mkdir, rename, unlink } from 'node:fs/promises';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 
+// Fixed, non-sliding session lifetime; invalid configuration fails closed at startup.
+const sessionTTLDays = process.env.SESSION_TTL_DAYS === undefined ? 7 : Number(process.env.SESSION_TTL_DAYS);
+if (!Number.isInteger(sessionTTLDays) || sessionTTLDays < 1 || sessionTTLDays > 30) throw new Error('SESSION_TTL_DAYS 必须为 1–30 的整数。');
+const SESSION_TTL_SECONDS = sessionTTLDays * 24 * 60 * 60;
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || '127.0.0.1';
 const BASE = new URL(process.env.PUBLIC_BASE_URL || `http://127.0.0.1:${PORT}`);
@@ -66,7 +70,7 @@ function isSecureRequest(req) { return String(req.headers['x-forwarded-proto'] |
 function json(res, code, value) { res.writeHead(code, { 'Content-Type':'application/json; charset=utf-8', 'Cache-Control':'no-store' }); res.end(JSON.stringify(value)); }
 function session(req) {
   const id = cookies(req).gh_session, value = sessions.get(id);
-  if (!value || value.expires < Date.now()) { if (id) sessions.delete(id); return null; }
+  if (!value || value.expires <= Date.now()) { if (id) sessions.delete(id); return null; }
   return value;
 }
 function accessFor(login) {
@@ -76,9 +80,9 @@ function accessFor(login) {
   return { allowed, isAdmin, adminConfigured:Boolean(ADMIN_GITHUB_LOGIN), policyConfigured:Boolean(!accessPolicy.allowAll) };
 }
 function safeUser(user) { return { login:user.login, name:user.name, avatar_url:user.avatar_url }; }
-function createSession(token, user) {
+function createSession(tokenData, user) {
   const sid = random();
-  sessions.set(sid, { token, csrf:random(), expires:Date.now() + 8 * 60 * 60 * 1000, user:safeUser(user) });
+  sessions.set(sid, { ...tokenFields(tokenData), sid, csrf:random(), expires:Date.now() + SESSION_TTL_SECONDS * 1000, user:safeUser(user) });
   return sid;
 }
 function requestOrigin(req) {
@@ -116,6 +120,65 @@ function allowedAPI(url, method) {
 }
 async function github(url, init = {}) { return fetch(url, { ...init, redirect:'error', signal:AbortSignal.timeout(45000) }); }
 
+// Credentials live only in sessions. Refresh never extends the fixed session TTL.
+function tokenFields(data, rotating = false) {
+  const validToken = value => typeof value === 'string' && value.length > 0 && value.length <= 4096 && !/[\s\x00-\x1f\x7f]/.test(value);
+  const deadline = seconds => {
+    if (!Number.isSafeInteger(seconds) || seconds <= 0 || seconds > 31536000) throw new Error('Invalid token lifetime');
+    return Date.now() + seconds * 1000;
+  };
+  if (!data || data.error || !validToken(data.access_token) || (data.token_type && String(data.token_type).toLowerCase() !== 'bearer')) throw new Error('Invalid token response');
+  if (rotating || data.refresh_token !== undefined) {
+    if (!validToken(data.refresh_token)) throw new Error('Invalid refresh token');
+    return { token:data.access_token, refreshToken:data.refresh_token, tokenExpires:deadline(data.expires_in), refreshExpires:deadline(data.refresh_token_expires_in) };
+  }
+  return { token:data.access_token, tokenExpires:data.expires_in === undefined ? null : deadline(data.expires_in) };
+}
+function activeSession(auth) {
+  return sessions.get(auth.sid) === auth && auth.expires > Date.now() && accessFor(auth.user.login).allowed;
+}
+function authExpired(auth) {
+  if (sessions.get(auth.sid) === auth) sessions.delete(auth.sid);
+  return Object.assign(new Error('OAuth authorization ended'), { status:401 });
+}
+async function refreshSession(auth, force = false, usedToken = auth.token) {
+  if (!activeSession(auth)) throw authExpired(auth);
+  if (auth.refreshing) return auth.refreshing;
+  if (force && usedToken !== auth.token) return;
+  if (!force && (!auth.tokenExpires || auth.tokenExpires > Date.now() + 60000)) return;
+  if (!auth.refreshToken) {
+    if (force || (auth.tokenExpires && auth.tokenExpires <= Date.now())) throw authExpired(auth);
+    return;
+  }
+  if (auth.refreshExpires <= Date.now()) throw authExpired(auth);
+  if (auth.refreshRetryAfter > Date.now()) throw Object.assign(new Error('Refresh temporarily unavailable'), { status:503 });
+  auth.refreshing = (async () => {
+    try {
+      const response = await github('https://github.com/login/oauth/access_token', {
+        method:'POST', headers:{ Accept:'application/json', 'Content-Type':'application/json', 'User-Agent':'github-image-host-web' },
+        body:JSON.stringify({ grant_type:'refresh_token', client_id:OAUTH_CLIENT_ID, client_secret:OAUTH_CLIENT_SECRET, refresh_token:auth.refreshToken })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!activeSession(auth)) throw authExpired(auth);
+      if (response.status === 429 || response.status >= 500) throw new Error('Refresh temporarily unavailable');
+      if (['bad_refresh_token','invalid_grant','expired_token','token_expired','revoked_token','invalid_token'].includes(data.error)) throw authExpired(auth);
+      if (!response.ok || data.error) throw new Error('Refresh rejected');
+      const next = tokenFields(data, true);
+      if (next.token === auth.token || next.refreshToken === auth.refreshToken) throw new Error('Invalid token rotation');
+      if (!activeSession(auth)) throw authExpired(auth);
+      Object.assign(auth, next);
+      auth.refreshRetryAfter = 0;
+    } catch (error) {
+      if (error.status === 401 || !activeSession(auth)) throw authExpired(auth);
+      // No automatic network retries: retain credentials and briefly dampen repeated requests.
+      auth.refreshRetryAfter = Date.now() + 5000;
+      throw Object.assign(new Error('Refresh temporarily unavailable'), { status:503 });
+    } finally { auth.refreshing = null; }
+  })();
+  return auth.refreshing;
+}
+
+
 const server = http.createServer(async (req, res) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'no-referrer');
@@ -150,14 +213,14 @@ const server = http.createServer(async (req, res) => {
       const tokenResponse = await github('https://github.com/login/oauth/access_token', { method:'POST', headers:{ Accept:'application/json', 'Content-Type':'application/json', 'User-Agent':'github-image-host-web' }, body:JSON.stringify({ client_id:OAUTH_CLIENT_ID, client_secret:OAUTH_CLIENT_SECRET, code, redirect_uri:OAUTH_REDIRECT_URI }) });
       const tokenData = await tokenResponse.json().catch(() => ({}));
       if (!tokenResponse.ok) return redirect(res, oauthError('oauth_exchange'));
-      if (tokenData.error || typeof tokenData.access_token !== 'string' || !tokenData.access_token || tokenData.access_token.length > 4096 || /[\s\x00-\x1f\x7f]/.test(tokenData.access_token) || (tokenData.token_type && String(tokenData.token_type).toLowerCase() !== 'bearer')) return redirect(res, oauthError('oauth_exchange'));
+      tokenFields(tokenData);
       const userResponse = await github('https://api.github.com/user', { headers:{ Authorization:`Bearer ${tokenData.access_token}`, Accept:'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28', 'User-Agent':'github-image-host-web' } });
       if (!userResponse.ok) return redirect(res, oauthError('oauth_user'));
       const user = await userResponse.json();
       const permission = accessFor(user.login);
       if (!permission.allowed) return redirect(res, oauthError('forbidden'));
-      const sid = createSession(tokenData.access_token, user);
-      res.setHeader('Set-Cookie', [clearOAuthCookie(), cookie('gh_session', sid, 8 * 60 * 60)]);
+      const sid = createSession(tokenData, user);
+      res.setHeader('Set-Cookie', [clearOAuthCookie(), cookie('gh_session', sid, SESSION_TTL_SECONDS)]);
       return redirect(res, new URL('/', BASE).toString());
     }
     if (url.pathname === '/api/admin/policy' && req.method === 'GET') {
@@ -198,13 +261,25 @@ const server = http.createServer(async (req, res) => {
     }
     if (url.pathname === '/api/github') {
       const auth = session(req);
-      if (!auth) return json(res, 401, { message:'登录已过期，请重新使用 GitHub 登录。' });
+      if (!auth) { res.setHeader('Set-Cookie', cookie('gh_session', '', 0, isSecureRequest(req))); return json(res, 401, { message:'登录已过期，请重新使用 GitHub 登录。' }); }
       if (req.method !== 'GET' && !requireCSRF(req, res, auth)) return;
       let target; try { target = new URL(url.searchParams.get('url')); } catch { return json(res, 400, { message:'无效的 API 地址' }); }
       if (!allowedAPI(target, req.method)) return json(res, 403, { message:'此 API 操作未开放。' });
+      if (!accessFor(auth.user.login).allowed) throw authExpired(auth);
       const body = req.method === 'GET' ? undefined : await readBody(req);
-      const upstream = await github(target, { method:req.method, headers:{ Authorization:`Bearer ${auth.token}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json', 'X-GitHub-Api-Version':'2022-11-28', 'User-Agent':'github-image-host-web' }, body });
-      if (upstream.status === 401) { sessions.delete(cookies(req).gh_session); return json(res, 401, { message:'GitHub 授权已失效，请重新使用 GitHub 登录。' }); }
+      await refreshSession(auth);
+      if (!activeSession(auth)) throw authExpired(auth);
+      const usedToken = auth.token;
+      const send = () => github(target, { method:req.method, headers:{ Authorization:`Bearer ${auth.token}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json', 'X-GitHub-Api-Version':'2022-11-28', 'User-Agent':'github-image-host-web' }, body });
+      let upstream = await send();
+      // Only GET is replayed; Git writes are never retried automatically.
+      if (upstream.status === 401 && req.method === 'GET' && auth.refreshToken) {
+        await upstream.arrayBuffer();
+        await refreshSession(auth, true, usedToken);
+        if (!activeSession(auth)) throw authExpired(auth);
+        upstream = await send();
+      }
+      if (upstream.status === 401) throw authExpired(auth);
       res.writeHead(upstream.status, { 'Content-Type':'application/json; charset=utf-8', 'Cache-Control':'no-store' });
       res.end(Buffer.from(await upstream.arrayBuffer())); return;
     }
@@ -214,10 +289,10 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/source/')) headers['Access-Control-Allow-Origin'] = 'https://github.com';
     res.writeHead(200, headers);
     res.end(await readFile(new URL(file, ROOT)));
-  } catch (error) { if (!res.headersSent && req.url.split('?')[0] === '/api/auth/github/callback') return redirect(res, oauthError('oauth_exchange')); if (!res.headersSent) json(res, error.status || 502, { message:'请求失败，请检查网络或服务配置后重试。' }); else res.end(); }
+  } catch (error) { if (!res.headersSent && error.status === 401) res.setHeader('Set-Cookie', cookie('gh_session', '', 0, isSecureRequest(req))); if (!res.headersSent && req.url.split('?')[0] === '/api/auth/github/callback') return redirect(res, oauthError('oauth_exchange')); if (!res.headersSent) json(res, error.status || 502, { message:error.status === 401 ? 'GitHub 授权已失效，请重新使用 GitHub 登录。' : error.status === 503 ? 'GitHub 授权刷新暂时不可用，请稍后重试。' : '请求失败，请检查网络或服务配置后重试。' }); else res.end(); }
 });
 setInterval(() => {
-  for (const [id, value] of sessions) if (value.expires < Date.now()) sessions.delete(id);
+  for (const [id, value] of sessions) if (value.expires <= Date.now()) sessions.delete(id);
   for (const [state, value] of oauthStates) if (value.expires < Date.now()) oauthStates.delete(state);
 }, 60000).unref();
 server.listen(PORT, HOST, () => console.log(`图床服务已启动：${BASE.origin} · Token 登录模式`));

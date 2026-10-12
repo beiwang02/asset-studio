@@ -12,7 +12,30 @@ class GitHubClient {
     if (!response.ok) { const e = new Error(data?.message || `GitHub API ${response.status}`); e.status = response.status; if (response.status === 401 && !retried && typeof window.recoverSession === 'function' && await window.recoverSession()) { if (typeof window.liveCsrf === 'function') this.csrf = window.liveCsrf() || this.csrf; return this.request(path, method, body, true); } throw e; }
     return data;
   }
-  async listRepos() { return this.request('/user/repos?per_page=100&sort=updated&affiliation=owner,collaborator,organization_member'); }
+  listRepos() {
+    // In-flight only: no persistent or cross-account repository cache.
+    if (this.repoListFlight) return this.repoListFlight;
+    const flight = this.fetchRepositoryPages();
+    this.repoListFlight = flight;
+    const clear = () => { if (this.repoListFlight === flight) this.repoListFlight = null; };
+    flight.then(clear, clear);
+    return flight;
+  }
+  async fetchRepositoryPages() {
+    const repos = [], seen = new Set();
+    for (let page = 1; page <= 1000; page++) {
+      const batch = await this.request(`/user/repos?per_page=100&sort=updated&affiliation=owner,collaborator,organization_member&page=${page}`);
+      if (!Array.isArray(batch)) throw new Error('GitHub 仓库列表响应无效，请重试。');
+      let added = 0;
+      for (const repo of batch) {
+        const key = repo.id == null ? String(repo.full_name || `${repo.owner?.login}/${repo.name}`).toLowerCase() : String(repo.id);
+        if (!seen.has(key)) { seen.add(key); repos.push(repo); added++; }
+      }
+      if (batch.length < 100) return repos;
+      if (!added) throw new Error('GitHub 仓库分页重复，请重试以避免遗漏仓库。');
+    }
+    throw new Error('GitHub 仓库分页超过安全上限，请重试或缩小账号仓库范围。');
+  }
   async createRepository(name, description = '') { return this.request('/user/repos', 'POST', { name:name.trim(), description:description.trim() || 'GitHub 图片资源和 JSON 库', private:false, auto_init:true }); }
   async renameRepository(name) { return this.request(`/repos/${encodeURIComponent(this.config.owner)}/${encodeURIComponent(this.config.repo)}`, 'PATCH', { name:name.trim() }); }
   async deleteRepository() { return this.request(`/repos/${encodeURIComponent(this.config.owner)}/${encodeURIComponent(this.config.repo)}`, 'DELETE'); }
