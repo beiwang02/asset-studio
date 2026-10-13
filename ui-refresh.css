@@ -358,8 +358,10 @@ body .json-reference-copy{grid-column:3;grid-row:1;align-self:center;min-width:0
 body .json-reference-copy b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;line-height:1.5;font-weight:600}
 body .json-reference-actions{display:contents!important}
 body .json-reference-row .reference-select{grid-column:1;grid-row:1;position:relative;inset:auto;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;margin:0;border:0!important;border-radius:8px;background:transparent!important;color:transparent;box-shadow:none}
-body .json-reference-row .reference-select::before{content:"";position:absolute;left:12px;top:12px;width:18px;height:18px;border:1px solid var(--multi-border);border-radius:5px;background:var(--multi-bg)}
-body .json-reference-row .reference-select[aria-pressed="true"]::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:var(--multi-mark);font-size:13px}
+body .json-reference-row .reference-select::before{content:"";position:absolute;left:11px;top:11px;width:22px;height:22px;box-sizing:border-box;border:1px solid var(--multi-border);border-radius:5px;background:var(--multi-bg)}
+body .json-reference-row .reference-select::after{content:none}
+body .json-reference-row .reference-select>.ui-icon{position:absolute;left:11px;top:11px;width:22px;height:22px;z-index:1;pointer-events:none}
+body .json-reference-row .reference-select[aria-pressed="true"]{color:var(--ui-check-mark)}
 body .json-reference-actions .icon-btn,body.dark .json-reference-actions .icon-btn{grid-row:1;width:44px!important;height:44px!important;min-width:44px;min-height:44px;padding:0;border-color:transparent!important;background:transparent!important;color:var(--muted)!important}
 body .json-reference-actions .copy-control-icon.ui-button{grid-column:4;width:44px!important;height:44px!important;min-width:44px;min-height:44px;max-width:none;max-height:none}
 body .json-reference-actions [data-action="delete-icon"]{grid-column:5;color:var(--ui-danger-ink)!important}

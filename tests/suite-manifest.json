@@ -3,6 +3,10 @@
   "workers": 4,
   "entries": [
     {
+      "file": "checkbox-unify151.cjs",
+      "kind": "current"
+    },
+    {
       "file": "action-spacing-contract.cjs",
       "kind": "historical",
       "approvedRevisions": [
@@ -614,7 +618,9 @@
     },
     {
       "file": "full-group-name150.cjs",
-      "kind": "current"
+      "kind": "historical",
+      "approvedRevisions": ["33ff22b"],
+      "purpose": "Exact approved 150 bytes retained by snapshot; current 151 scope covered separately"
     }
   ]
 }

@@ -1,0 +1,14 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),cp=require('node:child_process'),assert=require('node:assert/strict');
+const js=fs.readFileSync('console.js','utf8'),css=fs.readFileSync('ui-refresh.css','utf8');
+const old=cp.execFileSync('git',['show','4341670:console.css'],{encoding:'utf8'});assert(old.includes('transform:rotate(45deg)'));assert(old.includes('width:5px; height:9px; border:solid #fff'));assert(!js.includes('name="rememberToken"'));
+const S={connected:true,assets:[{id:'a',name:'重复',url:'a'}],selected:new Set(['a']),libraries:[{id:'l',name:'库',file:'l.json',icons:[{name:'重复',url:'one'},{name:'重复',url:'two'},{name:'其他',url:'three'}]}],selectedLibrary:'l',selectedIcons:new Set([1]),iconQuery:'重复'};
+const ctx=vm.createContext({S,sortedLibrariesC:x=>x,sortedIconsC:(l,x)=>[...x].reverse(),escC:String,rawLibrary:()=>'',emptyC:()=>'',imageURLC:x=>x.url});
+vm.runInContext(js.slice(js.indexOf('function uiIconC('),js.indexOf('function feedbackKindC(')),ctx);
+vm.runInContext(js.slice(js.indexOf('function librariesView()'),js.indexOf('function groupView()')),ctx);
+vm.runInContext(js.slice(js.indexOf('function assetView('),js.indexOf('function renderAssetsToolbar(')),ctx);
+const mark=ctx.uiIconC('check');assert(mark.includes('m5 12 4 4L19 6'));assert(ctx.assetView(S.assets[0]).includes(mark));const h=ctx.librariesView();assert(h.includes(mark));assert(h.indexOf('data-action="icon-open" data-index="1"')<h.indexOf('data-action="icon-open" data-index="0"'));assert(!h.includes('data-action="icon-open" data-index="2"'));assert(h.includes('aria-pressed="true">'+mark));S.selected.clear();S.selectedIcons.clear();assert(!ctx.assetView(S.assets[0]).includes('<svg'));assert(!ctx.librariesView().includes('aria-pressed="true">'+mark));
+assert.equal((js.match(/button.innerHTML=picked\?uiIconC\('check'\):'';/g)||[]).length,2);assert(!js.includes("button.textContent=picked?'✓':''"));assert(!css.includes('content:"✓"'));assert(css.includes('left:11px;top:11px;width:22px;height:22px;box-sizing:border-box'));
+const baselineCSS=cp.execFileSync('git',['show','33ff22b:ui-refresh.css'],{encoding:'utf8'});const recentStart='/* Release 150: intrinsic group-first wrapping; filename alone may truncate. */';assert(css.endsWith(baselineCSS.slice(baselineCSS.indexOf(recentStart))),'approved current 150 intrinsic group wrapping retained unchanged');
+for(const f of ['console.css','github.js','styles.css','responsive.css','server.mjs','README.md','compose.yaml'])assert.equal(fs.readFileSync(f,'utf8'),cp.execFileSync('git',['show','33ff22b:'+f],{encoding:'utf8'}),f+' outside scope');
+console.log('PASS151 current production renderer/shared SVG, selected/unselected, reverse original-index filtered duplicate names, incremental SVG sync contract and unchanged scope; historical CSS check inspected, not restored. Browser behavior separately verified with production handlers and synthetic repository data.');
