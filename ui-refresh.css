@@ -422,6 +422,10 @@ body .asset-card .asset-select>.ui-icon{position:relative;z-index:1;pointer-even
 body .asset-card .asset-select[aria-pressed="true"]{color:var(--ui-check-mark)}
 body .asset-card .asset-select[aria-pressed="true"]::before{border-color:var(--ui-check-bg);background:var(--ui-check-bg)}
 /* Selection belongs to the frame and inset square, never the row's text/background. */
+/* Release 152 selection frame: one shared contract for both card layouts.
+   Same border stroke, same inner 2px layer, same soft outer ring, same border width.
+   Each card keeps its own radius, offset and dimensions; only the frame is unified. */
+body :is(.asset-card.selected,.json-reference-row.selected){border-color:var(--ui-line-focus)!important;border-width:1px;box-shadow:0 0 0 2px var(--ui-selection-shadow)}
 body .json-reference-row.selected,body.dark .json-reference-row.selected{border-color:var(--ui-line-focus)!important;color:var(--ink);background:var(--surface)}
 body .json-reference-row.selected::after{border-color:var(--ui-line-focus)}
 body .json-reference-row .reference-select[aria-pressed="true"]::before,body.dark .json-reference-row .reference-select[aria-pressed="true"]::before{border-color:var(--ui-check-bg);background:var(--ui-check-bg)}
@@ -486,9 +490,10 @@ body.dark .stat-card:nth-child(2) .stat-icon{color:#dfb695;background:#3a3040}
 body.dark .stat-card:nth-child(3) .stat-icon{color:#91c5c8;background:#203b45}
 body.dark .stat-card:nth-child(4) .stat-icon{color:#a0c6ae;background:#293c3c}
 
-/* Dark JSON selection alone: soften the stacked frame, retain keyboard focus. */
-body.dark .json-reference-row.selected:not(:focus-visible){border-color:#626fa8!important}
-body.dark .json-reference-row.selected:not(:focus-visible)::after{border-color:#626fa8}
+/* Dark JSON selection shares the unified release-152 frame: same focus stroke as
+   the image cards, keyboard focus retained. No divergent softer-blue literal. */
+body.dark .json-reference-row.selected:not(:focus-visible){border-color:var(--ui-line-focus)!important}
+body.dark .json-reference-row.selected:not(:focus-visible)::after{border-color:var(--ui-line-focus)}
 
 /* Round 2 (release 120 preview): touch flash hardening, switch-option selection frame, stale-frame guards.
    All additions are hover-gated or hover-free; no new :hover selector escapes a hover-capable media query. */
