@@ -600,6 +600,13 @@
     },
     {
       "file": "corner148.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "094d431"
+      ]
+    },
+    {
+      "file": "restore-name-row.cjs",
       "kind": "current"
     }
   ]

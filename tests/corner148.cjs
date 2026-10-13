@@ -1,5 +1,5 @@
 'use strict';
-const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict');
+const fs=require('./snapshot.cjs').at('094d431'),cp=require('node:child_process'),assert=require('node:assert/strict');
 const read=f=>fs.readFileSync(f,'utf8'),old=f=>cp.execFileSync('git',['show','e1216be:'+f],{encoding:'utf8'});
 const css=old('ui-refresh.css'),marker='/* Release 147:',parts=css.split(marker);assert.equal(parts.length,2);
 const expected=parts[0]+marker+parts[1].replace('color:var(--muted);border:1px solid transparent;border-radius:3px;background:#f5f4f8','color:#737f94;border:1px solid transparent;border-radius:3px;background:rgba(110,105,145,.10)').replace('body.dark .quick-asset-image small{background:#282832}','body.dark .quick-asset-image small{background:rgba(12,15,25,.35);color:#a5b0c2}').replaceAll('width:20px;height:20px','width:22px;height:22px');
