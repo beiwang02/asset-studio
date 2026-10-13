@@ -604,11 +604,11 @@ body .quick-asset-name-row small{border-color:transparent;border-radius:3px;back
 body.dark .quick-asset-name-row small{border-color:transparent;background:#282832;color:var(--muted)}
 
 /* Release 147: approved image-corner anchors; preserve existing image and card dimensions. */
-body .quick-asset-image small{position:absolute;left:6px;top:6px;max-width:60%;box-sizing:border-box;margin:0;padding:0 2px;font-size:10px;line-height:13px;color:var(--muted);border:1px solid transparent;border-radius:3px;background:#f5f4f8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;z-index:2}
-body.dark .quick-asset-image small{background:#282832}
+body .quick-asset-image small{position:absolute;left:6px;top:6px;max-width:60%;box-sizing:border-box;margin:0;padding:0 2px;font-size:10px;line-height:13px;color:#737f94;border:1px solid transparent;border-radius:3px;background:rgba(110,105,145,.10);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;z-index:2}
+body.dark .quick-asset-image small{background:rgba(12,15,25,.35);color:#a5b0c2}
 body .quick-asset .quick-asset-name-row{min-height:15px}
 body .quick-asset-name-row b{width:100%}
 body .asset-card .asset-name-row{min-height:44px}
 body .asset-card .asset-preview .asset-select{position:absolute;left:0;top:0;z-index:2;display:grid;place-items:center}
-body .asset-card .asset-preview .asset-select::before{inset:auto;left:6px;top:6px;width:20px;height:20px;box-sizing:border-box}
-body .asset-card .asset-preview .asset-select>.ui-icon{position:absolute;left:6px;top:6px;width:20px;height:20px}
+body .asset-card .asset-preview .asset-select::before{inset:auto;left:6px;top:6px;width:22px;height:22px;box-sizing:border-box}
+body .asset-card .asset-preview .asset-select>.ui-icon{position:absolute;left:6px;top:6px;width:22px;height:22px}

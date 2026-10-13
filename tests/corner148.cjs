@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict');
+const read=f=>fs.readFileSync(f,'utf8'),old=f=>cp.execFileSync('git',['show','e1216be:'+f],{encoding:'utf8'});
+const css=old('ui-refresh.css'),marker='/* Release 147:',parts=css.split(marker);assert.equal(parts.length,2);
+const expected=parts[0]+marker+parts[1].replace('color:var(--muted);border:1px solid transparent;border-radius:3px;background:#f5f4f8','color:#737f94;border:1px solid transparent;border-radius:3px;background:rgba(110,105,145,.10)').replace('body.dark .quick-asset-image small{background:#282832}','body.dark .quick-asset-image small{background:rgba(12,15,25,.35);color:#a5b0c2}').replaceAll('width:20px;height:20px','width:22px;height:22px');
+assert.equal(read('ui-refresh.css'),expected,'exact approved colors and two 22px declarations only');
+assert.equal(read('index.html'),old('index.html').replace('ui-refresh.css?v=https-initial-caption-103&amp;revision=clean-ui-release-147','ui-refresh.css?v=https-initial-caption-103&amp;revision=clean-ui-release-148'));
+for(const f of ['console.js','github.js','console.css','styles.css','responsive.css','server.mjs','README.md','compose.yaml'])assert.equal(read(f),old(f),f+' frozen');
+assert(expected.includes('left:6px;top:6px;width:22px;height:22px;box-sizing:border-box'));assert(expected.includes('rgba(110,105,145,.10)'));assert(expected.includes('color:#737f94'));assert(expected.includes('rgba(12,15,25,.35);color:#a5b0c2'));
+console.log('PASS148 exact colors, 22px box/SVG, 6/6 anchor, JSON/business/layout frozen, CSS148 only');

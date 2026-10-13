@@ -1,4 +1,4 @@
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),cp=require('node:child_process');
+const fs=require('./snapshot.cjs').at('ba66060'),vm=require('node:vm'),assert=require('node:assert/strict'),cp=require('node:child_process');
 const read=f=>fs.readFileSync(f,'utf8'),old=f=>cp.execFileSync('git',['show','6254f20:'+f],{encoding:'utf8'}),js=read('console.js'),css=read('ui-refresh.css'),html=read('index.html');
 const before=old('console.js');
 const moveAsset=s=>s.replace(/function assetView\(item\)[^\n]+/,l=>{const b=l.match(/<button class="asset-select"[^]*?<\/button>/)[0];return l.replace(b,'').replace('</div><div class="asset-details">',b+'</div><div class="asset-details">');});
