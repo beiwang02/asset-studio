@@ -426,6 +426,10 @@ body .asset-card .asset-select[aria-pressed="true"]::before{border-color:var(--u
    Same border stroke, same inner 2px layer, same soft outer ring, same border width.
    Each card keeps its own radius, offset and dimensions; only the frame is unified. */
 body :is(.asset-card.selected,.json-reference-row.selected){border-color:var(--ui-line-focus)!important;border-width:1px;box-shadow:0 0 0 2px var(--ui-selection-shadow)}
+/* Selected frames snap: styles.css .asset-card transition:.2s would otherwise
+   interpolate the border/shadow swap on select (jelly). Only .selected loses its
+   transition; unselected hover/press keep the existing animated feedback. */
+.selected{transition:none!important}
 body .json-reference-row.selected,body.dark .json-reference-row.selected{border-color:var(--ui-line-focus)!important;color:var(--ink);background:var(--surface)}
 body .json-reference-row.selected::after{border-color:var(--ui-line-focus)}
 body .json-reference-row .reference-select[aria-pressed="true"]::before,body.dark .json-reference-row .reference-select[aria-pressed="true"]::before{border-color:var(--ui-check-bg);background:var(--ui-check-bg)}

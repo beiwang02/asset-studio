@@ -8,4 +8,9 @@ assert(css.includes('.library-card .library-list-row:last-child{border-radius:0 
 assert(css.includes('.library-card .library-list-row:active:not(:has(button:active,a:active,input:active)){border-top-color:transparent!important;box-shadow:inset 0 0 0 2px var(--ui-line-focus)}'),'overview JSON row press ring joins corners without duplicate divider');
 assert(!css.includes('.library-list-row:focus-visible,.library-card .library-list-row:focus-within{outline:none!important}'),'touch devices must retain keyboard focus');
 assert(css.includes('.library-list-row:focus-visible{outline:2px solid var(--ui-line-focus);outline-offset:-2px}'),'keyboard navigation keeps visible focus');
+assert(css.includes('.selected{transition:none!important}'),'selected frame must snap instantly, no 0.2s jelly from styles.css .asset-card transition');
+assert(css.includes('body :is(.asset-card.selected,.json-reference-row.selected){border-color:var(--ui-line-focus)!important;border-width:1px;box-shadow:0 0 0 2px var(--ui-selection-shadow)}'),'unified 152 selection frame retained');
+const base=fs.readFileSync('styles.css','utf8');
+assert(base.includes('.asset-card { min-width: 0; overflow: hidden; padding: 9px; cursor: pointer; transition: .2s; }'),'unselected card hover transition must remain untouched');
+assert(!base.includes('.asset-card.selected{transition:none'),'styles.css keeps the transition; only ui-refresh .selected kills it');
 console.log('PASS equal selection frames and library row focus styles');
