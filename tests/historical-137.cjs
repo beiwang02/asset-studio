@@ -1,1 +1,2 @@
-const fs=require('node:fs'),a=require('node:assert/strict'),path=require('node:path'),pairs=require('./release-137-authorized.json'),read=fs.readFileSync;fs.readFileSync=function(f,...args){let s=read.call(this,f,...args);const pair=pairs[String(f).replace(/^.*github-assets-fix127\//,'')]||pairs[path.basename(String(f))];if(pair){if(typeof s==='string'){a.equal(s,pair[0],'Exact brand and infrastructure release137 scope');s=pair[1];}else if(Buffer.isBuffer(s)&&process.argv[1]?.endsWith("release-135.cjs")){a.deepEqual(s,Buffer.from(pair[0]),'Exact metadata-only bytes');s=Buffer.from(pair[1]);}}return s;};
+// Helper only: requiring this module never intercepts current source reads.
+module.exports=require("./snapshot.cjs").at("162e8fa");

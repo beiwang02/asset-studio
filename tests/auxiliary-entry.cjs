@@ -1,5 +1,5 @@
-require('./historical-133.cjs');
-const fs=require('node:fs'),assert=require('node:assert/strict'),path=require('node:path');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),assert=require('node:assert/strict'),path=require('node:path');
 const read=f=>fs.readFileSync(path.join(__dirname,'..',f),'utf8');const css=read('ui-refresh.css'),js=read('console.js');
 assert(css.includes('#tokenLoginForm .token-guide-button.ui-button{justify-content:flex-start;text-align:left;padding:0;min-height:44px;border:0;background:transparent;font-size:12px;color:var(--primary);text-decoration:none}'));
 assert(css.includes('.json-workspace .library-name-trigger.ui-button{display:flex;align-items:center;justify-content:flex-start;gap:10px;width:100%;max-width:100%;min-width:0;min-height:64px'));

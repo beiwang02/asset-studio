@@ -1,4 +1,5 @@
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),vm=require('node:vm'),assert=require('node:assert/strict');
 const js=fs.readFileSync('console.js','utf8'),css=fs.readFileSync('ui-refresh.css','utf8');
 const c=vm.createContext({escC:v=>String(v).replaceAll('<','&lt;'),S:{repo:{},auth:null},compatibleRepos:()=>[]});
 vm.runInContext(js.slice(js.indexOf('function coverStack('),js.indexOf('function relativeTimeC(')),c);

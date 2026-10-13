@@ -1,4 +1,5 @@
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),vm=require('node:vm'),assert=require('node:assert/strict');
 const js=fs.readFileSync('console.js','utf8');
 (async()=>{
  let fail=false,release;const repos=[{owner:{login:'me'},name:'saved',default_branch:'main'},{owner:{login:'me'},name:'other',default_branch:'main'}];

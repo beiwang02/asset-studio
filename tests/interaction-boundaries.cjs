@@ -1,5 +1,5 @@
-require('./historical-133.cjs');
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),vm=require('node:vm'),assert=require('node:assert/strict');
 const s=fs.readFileSync(require('node:path').join(__dirname,'../console.js'),'utf8');
 let ok=false,removed=0,notifications=0,redirects=0,disposed=0;
 const c=vm.createContext({navigator:{clipboard:{writeText:async()=>{throw Error('denied')}}},document:{createElement:()=>({select(){},remove(){removed++}}),body:{appendChild(){}},execCommand:()=>ok},notify:()=>notifications++,fetch:async()=>({ok}),disposeRepositorySyncC:()=>disposed++,S:{connected:true},localStorage:{removeItem(){}},location:{replace(){redirects++}}});

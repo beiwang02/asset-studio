@@ -1,0 +1,599 @@
+{
+  "version": 1,
+  "workers": 4,
+  "entries": [
+    {
+      "file": "action-spacing-contract.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "action-spacing-normalize.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "active-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "added-sort.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "append-display.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "assets-press.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "async-submit.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "auxiliary-entry.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "auxiliary-muted.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "boot-auth-singleflight.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "button-state-audit.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "card-layout-library-create.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "checkbox-touch-paint.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "clean-site.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "committed-refresh.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "compact-toolbar-empty-library.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "compat-final.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "copy-controls.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "copy-visual-geometry.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "corner147.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "current-oauth-ui.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "current-read-performance.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "dropzone-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "external-sync.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "favicon-permission.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "field-menu.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "final-actions-focus-time.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "focus-activation.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "form-focus-colors.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "global-responsive.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "hero-disabled-state.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc",
+        "4885f22b80fe084a60523b4f6b7986f1128a5646"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "historical-133.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "historical-134.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "historical-135.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "historical-136.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "historical-137.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "history-recovery.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "horizontal-reference-strips.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "hover-gate.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "https-initial-caption.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "image-save.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "image-selection-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "information-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "interaction-boundaries.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "interaction-finish.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "json-reference-grid.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "library-append.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "library-basename.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "library-create-secondary.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "library-description-hierarchy.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "library-display.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "library-name-trigger.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "login-no-retry.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "metadata-free.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "modal-dismiss-busy.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "move-groups-normalize.cjs",
+      "kind": "helper",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "selfTest": true
+    },
+    {
+      "file": "move-groups.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "multi-select-colors.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "native-picker-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "no-sync-nav.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "oauth-login.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "9d611be8950ef16a2b6d585721721038a01c956b"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "oauth-refresh.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "oauth-server.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "oauth-ui-audit.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "993ee72d2131585977e8f9886a35046f4ed1af5d"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "outline-text-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "overview-hero.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "overview-library-header.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "overview-no-activity.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "overview-no-hero.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "policy-ui.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "recent-copy-boundary.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "reference-strip-contracts.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "release-123.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "release-127-normalize.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "release-127.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "release-128-normalize.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "release-128.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "release-129-normalize.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "release-130-normalize.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "release-131-normalize.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "release-131.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "release-132-normalize.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "release-132.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "4885f22b80fe084a60523b4f6b7986f1128a5646"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "release-133-normalize.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "release-133.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "9d611be8950ef16a2b6d585721721038a01c956b"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "release-135.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "153d47732205e455f32b3094d15cac13a91825b4"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "removal-icon-color.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "repo-entry.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "repo-gate.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "repo-read.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "repository-pagination.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "restored-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "round2-regressions.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "search-input.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "selection-frame.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "selection-stability.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "server-policy.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "session-reopen.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "session-seven-days.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "settings-local-refinement.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "settings-simplify-normalize.cjs",
+      "kind": "helper",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "selfTest": true
+    },
+    {
+      "file": "settings-typography.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "small-action-pointer.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "snapshot-isolation.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "snapshot.cjs",
+      "kind": "helper"
+    },
+    {
+      "file": "soft-blue-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "soft-color-contract.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "sync-boundaries.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "tap-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "text-danger-feedback.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "token-overflow.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "token-remember.cjs",
+      "kind": "historical",
+      "approvedRevisions": [
+        "c75e7eb8038e0b2c4e7ff21ad67315b5a7547cfc"
+      ],
+      "purpose": "Approved release/byte-freeze or retired Token-era behavior; NOT live source coverage"
+    },
+    {
+      "file": "transparent-preview.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "unified-feedback.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "update-times.cjs",
+      "kind": "current"
+    },
+    {
+      "file": "upload-group-entry.cjs",
+      "kind": "current"
+    }
+  ]
+}

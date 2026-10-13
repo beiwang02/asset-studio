@@ -1,1 +1,2 @@
-const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),pairs=require('./release-135-authorized.json'),read=fs.readFileSync;fs.readFileSync=function(file,...args){let s=read.call(this,file,...args);if(typeof s==='string')for(const [now,old] of pairs[path.basename(String(file))]||[]){assert.equal(s.split(now).length-1,1,'Exact135 authorization');s=s.replace(now,old);}return s;};
+// Helper only: requiring this module never intercepts current source reads.
+module.exports=require("./snapshot.cjs").at("9144564");

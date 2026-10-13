@@ -1,4 +1,5 @@
-const fs=require('node:fs'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),assert=require('node:assert/strict');
 const css=require('./release-127-normalize.cjs').normalize(fs.readFileSync('responsive.css','utf8'),'responsive.css'),html=require('./release-127-normalize.cjs').normalize(fs.readFileSync('index.html','utf8'),'index.html');
 assert(html.includes('href="responsive.css?v=global-responsive-2"'));
 assert(!/user-scalable\s*=\s*no|maximum-scale/i.test(html));

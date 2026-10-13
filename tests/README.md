@@ -1,23 +1,24 @@
-# 测试目录
+# 测试设施
 
-- `*.cjs`：Node 回归测试及其 helpers，可在仓库根目录逐个运行；目前 112 个文件（包含直接执行无断言的 helpers，不能等同于 112 项业务测试）。
-- `*.js`：浏览器审计函数，覆盖布局几何、计算样式及交互，不是同名 `.cjs` 的重复副本。
-- `*.html`：测试夹具，不用于生产服务。
+## 一键运行
 
-## Node 回归
+完整 clone（必须保留 Git 历史）中，从仓库根目录运行：
 
 ```bash
-for file in tests/*.cjs; do node "$file" || exit 1; done
+node tests/run.cjs --output test-suite-verification.json
 ```
 
-`overview-no-hero.cjs` 和 `release-132.cjs` 会读取 Git 历史中的已验收文件。请使用完整克隆保留这些历史提交。
+runner 固定 bounded 4 workers、清除 `NODE_OPTIONS`，逐项记录 stdout/stderr/退出码并在结束再次核验生产文件 SHA-256。`tests/suite-manifest.json` 明确每个 CJS 的类别：`current` 直接读取当前源码；`historical` 只通过 `tests/snapshot.cjs` 的局部快照读取批准 Git revision；`helper` 是归一化器/快照基础设施，单独计数，绝不计入业务 passed。新增 CJS 必须加入清单，否则 runner 拒绝执行。
 
-`node tests/release-132.cjs` 不需要 `NODE_OPTIONS` 或仓库外 workspace helpers。它验证最终 cache132 批准提交 `4885f22b80fe084a60523b4f6b7986f1128a5646`（含 OAuth state 回收），通过精确授权 JSON 逆变换逐字比较基线 `bbbc2df8de9ed79831438d02f78d7667895d888a`；保留六个文件、全部 CSS 断言和拒绝未授权变异的断言。归一化器不再修改全局 `fs.readFileSync`。这是历史 snapshot，不能用它冻结或回退今天的 README。当前七天会话和 OAuth 行为分别由 `session-seven-days.cjs`、`oauth-server.cjs` 等直接读取实时源码的测试覆盖。
+当前设施基线：70 current、30 historical、16 helper；本次完整实际结果由 `test-suite-verification.json` 记录，另有 158/158 JS/CJS/MJS syntax 通过。当前回归包含 `current-oauth-ui.cjs`（OAuth-only、错误态、无 Token fallback/retry/持久化、旧凭据清理、settings/admin）和 `current-read-performance.cjs`（实时 github.js，bounded history=4、分页/重试/rename、并发去重和 stale epoch）。服务器实时契约由 `oauth-server.cjs`、`session-seven-days.cjs`、`oauth-refresh.cjs`、`server-policy.cjs` 覆盖；这些不会切换到历史源码。
 
-部分其他旧测试仍对当前源码应用历史冻结链；直接运行全矩阵可能报历史授权不匹配。必须保留实际失败，不得用外部 preload、跳过文件或将失败标记为通过。
+`historical` 明确标记退休 Token/旧 UI 或已验收发布契约；它们说明当时 Git revision 的授权行为，不声称当前产品仍支持 Token。过时测试不会通过全局 `fs.readFileSync` monkeypatch 掩盖当前代码。`release-132.cjs` 精确使用 `4885f22`，逆变换到 `bbbc2df`，保留全部 CSS、六文件和拒绝未授权变异断言；无需 workspace 或 `NODE_OPTIONS`。
 
-## 浏览器审计
+## 目录约定
 
-通过本地测试夹具加载 `.js`；部分脚本提供 `window.audit…` 入口，供浏览器工具动态加载调用。没有静态 HTML 引用不等于已废弃。不要仅凭扩展名或相同文件名删除测试。
+- `*.cjs`：manifest 中分类执行的 Node 测试/设施；不可用 helper 执行次数冒充业务测试数。
+- `*.js`：浏览器审计函数；须加载测试夹具进行真实 DOM/交互验收。
+- `*.html`：测试夹具，不是生产页面。
+- `production-freeze.json`：相对 `b41644c` 的生产 tracked 文件哈希冻结，测试设施之外不得修改。
 
-Node 回归不替代真实移动端浏览器交互验收。
+失败必须逐项保留并诊断；不得删断言、宽泛 regex 忽略、跳过文件或宣称全绿。业务源码、README、UI/backend、`.env`、部署和运行容器不属于本设施修改范围。

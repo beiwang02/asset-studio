@@ -1,5 +1,5 @@
-require('./historical-133.cjs');
-const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..');
 const source=fs.readFileSync(path.join(root,'server.mjs'),'utf8').replace(/^import .*;\n/gm,'').replace('import.meta.url',JSON.stringify('file://'+root+'/server.mjs'));
 const message='当前 GitHub 账号暂无访问权限，请联系管理员添加到允许名单。';

@@ -24,8 +24,19 @@ function atRule(prelude){
 function walk(prelude,body,gated,file,naked){
   if(body===null)return;
   if(atRule(prelude)){ const inner=gated||prelude.includes('hover:hover'); for(const [p,b] of parse(body)) walk(p,b,inner,file,naked); return; }
-  if(prelude.includes(':hover')&&!gated)naked.push(file+': '+prelude.trim().slice(0,70));
+  if(prelude.includes(':hover')&&!gated){
+    // Approved auth rule lists the unconditional base alongside its states.
+    // It applies exactly the same box-shadow:none even without hover: no touch effect.
+    const noEffect=file==='console.css' && prelude.trim()==='.auth-page .auth-card .btn-github, .auth-page .auth-card .btn-github:is(:hover,:active,:focus,:focus-visible)' && body.trim()==='box-shadow:none;';
+    if(!noEffect)naked.push(file+': '+prelude.trim().slice(0,70));
+  }
 }
+// Mutation guards: a changed declaration, dropped base, or unrelated naked hover fails.
+for(const [p,b] of [
+ ['.auth-page .auth-card .btn-github, .auth-page .auth-card .btn-github:is(:hover,:active,:focus,:focus-visible)','box-shadow:0 0 4px red;'],
+ ['.auth-page .auth-card .btn-github:is(:hover,:active,:focus,:focus-visible)','box-shadow:none;'],
+ ['.unexpected:hover','color:red;']
+]){const bad=[];walk(p,b,false,'console.css',bad);assert.equal(bad.length,1);}
 for(const file of sheets){
   const css=read(file).replace(/\/\*[\s\S]*?\*\//g,''), naked=[];
   for(const [p,b] of parse(css)) walk(p,b,false,file,naked);

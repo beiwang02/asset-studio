@@ -1,4 +1,5 @@
-const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),cp=require('child_process');
+// HISTORICAL contract: approved 993ee72; not current product coverage.
+const fs=require('./snapshot.cjs').at('993ee72'),vm=require('vm'),assert=require('assert/strict'),cp=require('child_process');
 const read=f=>fs.readFileSync(f,'utf8'),js=read('console.js'),html=read('index.html'),css=read('console.css'),base=f=>cp.execFileSync('git',['show','c589d48:'+f],{encoding:'utf8'});
 const pairs=[['当前 GitHub 身份与 Token 会话信息。','当前 GitHub 登录身份与授权信息。'],['Token 内存会话','GitHub OAuth 会话'],['经典 Token','GitHub OAuth'],['Token 只在服务器内存会话中使用；“记住此设备”仅保存在当前浏览器本地。','授权凭据仅保存在服务器内存中；退出登录或服务重启后需重新登录。'],['不是昵称、邮箱或 Token','不是昵称或邮箱']];
 let expected=base('console.js');for(const [a,b]of pairs){assert.equal(expected.split(a).length,2);expected=expected.replace(a,b);}assert.equal(js,expected,'Only five approved visible literals changed; all business/auth code frozen');

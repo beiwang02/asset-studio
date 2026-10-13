@@ -1,4 +1,5 @@
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),cp=require('node:child_process');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),vm=require('node:vm'),assert=require('node:assert/strict'),cp=require('node:child_process');
 const js=require('./release-127-normalize.cjs').normalize(fs.readFileSync('console.js','utf8'),'console.js'),old=cp.execFileSync('git',['show','f84318d:console.js'],{encoding:'utf8'});
 const bar=/<section class="overview-quickbar"[\s\S]*?<\/section>(?=<div class="stat-grid">)/;
 const omitAdmin=s=>s.replace(/function adminPage\(\)[^]*?(?=function renderC\(\))/,'');

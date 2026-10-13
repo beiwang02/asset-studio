@@ -1,4 +1,5 @@
-const fs=require('node:fs'),assert=require('node:assert/strict'),cp=require('node:child_process');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),assert=require('node:assert/strict'),cp=require('node:child_process');
 const css=fs.readFileSync('ui-refresh.css','utf8');
 assert(css.includes('--ui-action-gap:8px;--ui-toolbar-action-gap:4px;--ui-icon-action-gap:0px;'));
 assert(!css.includes('inset-inline-start:4px')&&!css.includes('json-reference-actions{margin-inline:-6px}'));

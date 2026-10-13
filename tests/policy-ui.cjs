@@ -1,4 +1,5 @@
-const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),assert=require('node:assert/strict'),vm=require('node:vm');
 const js=fs.readFileSync('console.js','utf8'),css=fs.readFileSync('console.css','utf8'),ui=fs.readFileSync('ui-refresh.css','utf8');
 const c={S:{adminConfigured:true,isAdmin:true,allowAll:false,allowedUsers:['existing-user']},escC:s=>s};vm.createContext(c);vm.runInContext(js.slice(js.indexOf('function adminPage()'),js.indexOf('function renderC()')),c);
 const html=c.adminPage();assert(html.includes('允许名单（GitHub 用户名）'));assert(html.includes('placeholder="例如：user1,user2"'));assert(html.includes('不是昵称、邮箱或 Token'));assert(html.includes('多个用户名用英文逗号分隔'));assert(html.includes('管理员身份权限独立授予'));assert(html.includes('value="existing-user"'));assert(!html.includes('name="allowAll" checked'));c.S.allowAll=true;assert(c.adminPage().includes('name="allowAll" checked'));

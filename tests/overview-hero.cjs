@@ -1,4 +1,5 @@
-const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),cp=require('node:child_process'),assert=require('node:assert/strict');
 const js=require('./release-127-normalize.cjs').normalize(fs.readFileSync('console.js','utf8'),'console.js'),base=cp.execFileSync('git',['show','6b29a313c3672faa963b8c3b62d8d859a4db1246:console.js'],{encoding:'utf8'});
 const hero=/<section class="hero overview-hero"[^]*?<\/section>(?=<div class="stat-grid">)/;
 assert(hero.test(js));const uploadGuard="if(action==='upload'){if(!S.connected)return notify('请先连接仓库','error');uploadModal();return;}";

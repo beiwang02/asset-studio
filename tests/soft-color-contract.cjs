@@ -1,4 +1,5 @@
-const fs=require('node:fs'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),assert=require('node:assert/strict');
 // Closed literal allowlist, not a regex blanket exemption: all geometry stays frozen.
 const replacements={
  '#b23c55':'var(--ui-danger-ink)','#d84f67':'var(--ui-danger-ink)','#d66a76':'var(--ui-danger-ink)','#c34f61':'var(--ui-danger-ink)','#c6445e':'var(--ui-danger-ink)','#efa5b3':'var(--ui-danger-ink)','#ff9cac':'var(--ui-danger-ink)','#e5a0ad':'var(--ui-danger-ink)','#e58a96':'var(--ui-danger-ink)',

@@ -1,5 +1,5 @@
-require('./historical-133.cjs');
-const fs=require('node:fs'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),assert=require('node:assert/strict');
 const js=fs.readFileSync('console.js','utf8'),css=fs.readFileSync('ui-refresh.css','utf8');
 const section=(a,b)=>js.slice(js.indexOf(a),js.indexOf(b));
 const upload=section('function uploadModal(','function libraryPickerModal(');

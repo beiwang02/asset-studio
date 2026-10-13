@@ -1,4 +1,5 @@
-const fs=require('node:fs'),{createHash}=require('node:crypto'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),{createHash}=require('node:crypto'),assert=require('node:assert/strict');
 // Frozen SHA-256 from 7c65fc7; works in an isolated release without .git.
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const current=require('./release-127-normalize.cjs').normalize(fs.readFileSync('ui-refresh.css','utf8'),'ui-refresh.css');

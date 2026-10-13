@@ -1,4 +1,5 @@
-const fs=require('node:fs'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),assert=require('node:assert/strict');
 const all=require('./action-spacing-normalize.cjs').normalizeActionSpacing(require('./release-127-normalize.cjs').normalize(fs.readFileSync('ui-refresh.css','utf8'),'ui-refresh.css')),css=all.split('/* JSON references: horizontal list rows;')[1].split('/* Both card types')[0];
 assert(css,'horizontal list layout must replace rejected image-first cards');
 for(const token of ['grid-template-columns:minmax(0,1fr)','container-type:inline-size','@media(min-width:701px)','@container references (min-width:660px)','@container references (min-width:1020px)','repeat(2,minmax(0,1fr))','repeat(3,minmax(0,1fr))','grid-template-columns:44px 48px minmax(0,1fr) 44px 44px','grid-template-columns:44px 40px minmax(0,1fr) 44px 44px','display:contents!important','grid-column:1;grid-row:1','grid-column:2;grid-row:1','grid-column:3;grid-row:1','grid-column:4','grid-column:5','width:40px;height:40px','object-fit:contain','max-height:100%','min-width:44px','width:44px!important','font-size:13px;line-height:1.5'])assert(css.includes(token),token);

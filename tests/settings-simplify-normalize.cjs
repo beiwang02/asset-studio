@@ -1,3 +1,4 @@
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
 const assert=require('node:assert/strict');
 const current=`/* Identity card only: one account/repository divider, not a ruled table. */
 .settings-grid>.settings-card:nth-child(2)>.info-list{gap:4px;padding:12px 0 0;border-bottom:0}
@@ -8,4 +9,4 @@ const typographyPairs=[[".settings-grid .settings-card h3{font-size:clamp(.875re
 exports.typographyPairs=typographyPairs;
 exports.current=current;
 exports.normalizeSettingsSimplify=source=>{assert.equal(source.split(current).length-1,1,'One exact authorized settings simplification');source=source.replace(current,previous);for(const [now,old] of typographyPairs){assert.equal(source.split(now).length-1,1,'One exact responsive settings rule');source=source.replace(now,old);}return source;};
-if(require.main===module){const fs=require('node:fs'),cp=require('node:child_process');assert.equal(exports.normalizeSettingsSimplify(require('./release-127-normalize.cjs').normalize(fs.readFileSync('ui-refresh.css','utf8'),'ui-refresh.css')),cp.execFileSync('git',['show','a96a4f9:ui-refresh.css'],{encoding:'utf8'}));console.log('PASS settings simplification: all other CSS bytes fixed to a96a4f9');}
+if(require.main===module){const fs=require('./snapshot.cjs').at('c75e7eb'),cp=require('node:child_process');assert.equal(exports.normalizeSettingsSimplify(require('./release-127-normalize.cjs').normalize(fs.readFileSync('ui-refresh.css','utf8'),'ui-refresh.css')),cp.execFileSync('git',['show','a96a4f9:ui-refresh.css'],{encoding:'utf8'}));console.log('PASS settings simplification: all other CSS bytes fixed to a96a4f9');}

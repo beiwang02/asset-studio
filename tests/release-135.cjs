@@ -1,4 +1,5 @@
-const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict'),crypto=require('node:crypto'),vm=require('node:vm');
+// HISTORICAL contract: approved 153d477; not current product coverage.
+const fs=require('./snapshot.cjs').at('153d477'),cp=require('node:child_process'),assert=require('node:assert/strict'),crypto=require('node:crypto'),vm=require('node:vm');
 const pairs=require('./release-135-authorized.json'),read=f=>fs.readFileSync(f,'utf8'),old=f=>cp.execFileSync('git',['show','be5a55f:'+f],{encoding:'utf8'});
 for(const f of Object.keys(pairs)){let s=read(f);for(const [now,before] of pairs[f]){assert.equal(s.split(now).length-1,1);s=s.replace(now,before);}assert.equal(s,old(f),'Exact authorized login delta only: '+f);}
 assert.equal(read('Dockerfile'),old('Dockerfile').replace('icons/icon-512.png ./icons/','icons/icon-512.png icons/purplebrand.svg ./icons/'),'Only approved login logo packaging addition');

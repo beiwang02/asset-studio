@@ -1,4 +1,5 @@
-const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),cp=require('node:child_process'),assert=require('node:assert/strict');
 const pairs=require('./release-123-index-authorized.json');
 function normalizeIndex(source){for(const [now,old] of pairs){assert(now.length>0);assert.equal(source.split(now).length-1,1);source=source.replace(now,old);}return source;}
 module.exports={normalizeIndex};

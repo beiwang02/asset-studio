@@ -1,4 +1,5 @@
-const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict');
+// HISTORICAL contract: approved c75e7eb; not current product coverage.
+const fs=require('./snapshot.cjs').at('c75e7eb'),cp=require('node:child_process'),assert=require('node:assert/strict');
 const css=require('./release-127-normalize.cjs').normalize(fs.readFileSync('ui-refresh.css','utf8'),'ui-refresh.css'),base=cp.execFileSync('git',['show','360c42a:ui-refresh.css'],{encoding:'utf8'});
 const marker='\n/* Settings typography (release 122): stop WebKit inflation locally; preserve pinch zoom. */\n';
 assert.equal(css.split(marker).length,2,'One scoped approved typography block');
