@@ -621,3 +621,8 @@ body .asset-card .asset-name-row{gap:0;min-height:44px}
 body .asset-card .asset-name-row .asset-select{position:relative;inset:auto;display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;min-width:44px;min-height:44px}
 body .asset-card .asset-name-row .asset-select::before{inset:auto;left:11px;top:11px;width:22px;height:22px;box-sizing:border-box}
 body .asset-card .asset-name-row .asset-select>.ui-icon{position:relative;inset:auto;width:22px;height:22px}
+
+/* Release 150: intrinsic group-first wrapping; filename alone may truncate. */
+body .quick-asset .quick-asset-name-row{align-items:baseline;gap:4px;row-gap:2px;flex-wrap:wrap}
+body .quick-asset-name-row small{flex:0 0 auto;max-width:100%;white-space:normal;overflow-wrap:anywhere;overflow:visible;text-overflow:clip}
+body .quick-asset-name-row b{flex:1 1 18px;min-width:0}

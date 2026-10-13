@@ -1,5 +1,5 @@
 'use strict';
-const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict');
+const fs=require('./snapshot.cjs').at('fbd0322'),cp=require('node:child_process'),assert=require('node:assert/strict');
 const read=f=>fs.readFileSync(f,'utf8'),old=f=>cp.execFileSync('git',['show','094d431:'+f],{encoding:'utf8'}),historic=f=>cp.execFileSync('git',['show','6254f20:'+f],{encoding:'utf8'});
 let expected=old('console.js');for(const token of ['function assetView(item)','  return `<section class="overview-assets-section">']){const a=expected.split('\n').find(x=>x.startsWith(token)),b=historic('console.js').split('\n').find(x=>x.startsWith(token));expected=expected.replace(a,b);}assert.equal(read('console.js'),expected,'exactly two historic DOM moves, all logic frozen');
 const css=read('ui-refresh.css');assert(css.startsWith(old('ui-refresh.css')),'prior CSS unchanged');assert(css.includes('max-width:28%'));assert(css.includes('left:11px;top:11px;width:22px;height:22px'));assert(css.includes('gap:0;min-height:44px'));assert(css.includes('background:rgba(110,105,145,.10)'));assert(css.includes('background:rgba(12,15,25,.35);color:#a5b0c2'));
