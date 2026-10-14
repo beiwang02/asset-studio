@@ -653,3 +653,9 @@ body.dark .quick-asset-name-row small{background:transparent;border:0;color:#a5b
 /* Release 159: recent overview only; horizontal gap and edge-aligned names. */
 @media(max-width:700px){body .quick-assets-grid{column-gap:9px}}
 body .quick-asset .quick-asset-name-row{padding-inline:0}
+
+/* Release 160: match Assets' resting selection stroke without changing either shape.
+   Keyboard JSON focus keeps its existing distinct inset ring. */
+body .json-reference-row.selected:not(:focus-visible){outline:2px solid var(--ui-line-focus);outline-offset:0;box-shadow:0 0 0 2px var(--ui-selection-shadow)}
+/* Selected sidebar only: retain gradient, white ink, hit area and keyboard outline. */
+body .sidebar .nav-item.active,body.dark .sidebar .nav-item.active{box-shadow:none!important;filter:none!important;color:#fff!important}

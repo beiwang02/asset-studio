@@ -14,7 +14,7 @@ def draw_icon(size, rounded=True):
     # Supersampling preserves the silhouette and sun at 16px.
     n = max(512, size * 4)
     scale = n / 64
-    start, end = (89, 101, 242), (116, 98, 220)
+    start, end = (102, 113, 252), (102, 113, 252)
     ramp = Image.linear_gradient('L').resize((2 * n, 2 * n))
     ramp = ramp.transform((n, n), Image.Transform.AFFINE, (1, 0, 0, 1, 1, 0))
     gradient = Image.composite(Image.new('RGBA', (n, n), end + (255,)),
