@@ -649,3 +649,7 @@ body .quick-asset-name-row small{order:2;position:static;inset:auto;z-index:auto
 body.dark .quick-asset-name-row small{background:transparent;border:0;color:#a5b0c2}
 @media(max-width:700px){body .quick-asset .quick-asset-name-row{grid-template-columns:minmax(0,1fr) 30px;gap:3px}}
 @media(max-width:359px){body .quick-asset .quick-asset-name-row{grid-template-columns:minmax(0,1fr) 27px;gap:2px;padding-inline:0}}
+
+/* Release 159: recent overview only; horizontal gap and edge-aligned names. */
+@media(max-width:700px){body .quick-assets-grid{column-gap:9px}}
+body .quick-asset .quick-asset-name-row{padding-inline:0}

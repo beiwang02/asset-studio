@@ -4,12 +4,17 @@
   "entries": [
     {
       "file": "recent-clean-row158.cjs",
-      "kind": "current"
+      "kind": "historical",
+      "approvedRevisions": [
+        "b4531f6"
+      ]
     },
     {
       "file": "selection-and-detail157.cjs",
       "kind": "historical",
-      "approvedRevisions": ["7312dc8"],
+      "approvedRevisions": [
+        "7312dc8"
+      ],
       "purpose": "Exact release157 scope retained; live release158 scope tested separately"
     },
     {
@@ -629,8 +634,14 @@
     {
       "file": "full-group-name150.cjs",
       "kind": "historical",
-      "approvedRevisions": ["33ff22b"],
+      "approvedRevisions": [
+        "33ff22b"
+      ],
       "purpose": "Exact approved 150 bytes retained by snapshot; current 151 scope covered separately"
+    },
+    {
+      "file": "recent-gap159.cjs",
+      "kind": "current"
     }
   ]
 }

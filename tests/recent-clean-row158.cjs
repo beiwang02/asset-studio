@@ -1,5 +1,5 @@
 'use strict';
-const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict');
+const fs=require('./snapshot.cjs').at('b4531f6'),cp=require('node:child_process'),assert=require('node:assert/strict');
 const read=f=>fs.readFileSync(f,'utf8'),base=f=>cp.execFileSync('git',['show','7312dc8:'+f],{encoding:'utf8'});
 const css=read('ui-refresh.css'),old=base('ui-refresh.css');
 assert(css.startsWith(old),'only append scoped override');

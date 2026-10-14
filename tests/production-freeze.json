@@ -1,5 +1,5 @@
 {
-  "baseline": "7312dc8 + authorized recent-clean-row158 (only ui-refresh.css and its index.html cache; production commit referenced by release report)",
+  "baseline": "b4531f6 + authorized recent-gap159 (only two appended CSS rules and index CSS cache159)",
   "algorithm": "sha256",
   "files": {
     ".dockerignore": "8b433cd89b2a4abda0cf75cdbcbc4a5a8bbb1f3dc0b09570a2bf747570c8df44",
@@ -25,13 +25,13 @@
     "icons/icon-192.png": "23abe2667d6880c51052d7df1a8db7c93c59ef79742522299d7967a7bb83922a",
     "icons/icon-512.png": "c5ed2cf1f39916b66444c84a3f4d7ccc98c5eb4ba20cc960baaf504a4c5b6ea9",
     "icons/purplebrand.svg": "43672a3a61a5217478d2a11fe9de0db5574578079407edacc8ea8d520281ceae",
-    "index.html": "5634dc75415c28edb7747f04dcdfaa6f1e080d91fd5ea821de8b7a5672b2b685",
+    "index.html": "5bdb7db1da5b143e40c6e59e4e8018a16a58290218e888d0dbf38cc67d7e54d9",
     "install.sh": "50f1de96ba6620ab216a5c9c284be974268f589f917a8e7398caea7ef1556eb5",
     "popup.js": "c418c860001c5cfedd3e9e059f43f8bd10660f2430f3f1aab1168957c1a97840",
     "responsive.css": "15a7c1b374f74992c8f001880e51236900e0031b2d21edc55f804738e0e81916",
     "server.mjs": "97259685b7ec0a26a5829a11c2972456fe3f238240f6c0a1fb156050fe7e6002",
     "styles.css": "be537ffeed0635381cd672f526daae11145dc6f06183a98c530b230928915928",
-    "ui-refresh.css": "4fccef5997610c9feea0527ce824310c684c357b5b950e309526d4a5086114a8",
+    "ui-refresh.css": "017aaff2ead432004963c6f237382e16798a7cc98642d635e0133770515b8683",
     "vendor/floating-ui/LICENSE": "0e4c9a9b6c71019cbbea3bdc20b01223110a9035700f9c960c8fcbf78c2325ce",
     "vendor/floating-ui/README.md": "5b199917450e38306462dd942a18f5ef64007e702f6e681e1b5155a99d14f6a9",
     "vendor/floating-ui/core-1.8.0.umd.min.js": "65940d866a6b6d831394a4bbed99ed0a39330bac98b643386d9a2f87a1a1d5da",
