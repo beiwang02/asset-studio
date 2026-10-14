@@ -3,8 +3,14 @@
   "workers": 4,
   "entries": [
     {
-      "file": "selection-and-detail157.cjs",
+      "file": "recent-clean-row158.cjs",
       "kind": "current"
+    },
+    {
+      "file": "selection-and-detail157.cjs",
+      "kind": "historical",
+      "approvedRevisions": ["7312dc8"],
+      "purpose": "Exact release157 scope retained; live release158 scope tested separately"
     },
     {
       "file": "checkbox-unify151.cjs",

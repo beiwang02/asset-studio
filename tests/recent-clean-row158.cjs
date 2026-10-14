@@ -1,0 +1,15 @@
+'use strict';
+const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict');
+const read=f=>fs.readFileSync(f,'utf8'),base=f=>cp.execFileSync('git',['show','7312dc8:'+f],{encoding:'utf8'});
+const css=read('ui-refresh.css'),old=base('ui-refresh.css');
+assert(css.startsWith(old),'only append scoped override');
+const delta=css.slice(old.length);
+assert(delta.startsWith('\n/* Release 158:'));
+const selectors=[...delta.matchAll(/(?:^|\n)([^\n{}]+)\{/g)].map(x=>x[1]);
+assert(selectors.every(x=>x.startsWith('@media')||x.includes('.quick-asset')),'recent-only selectors');
+for(const s of ['grid-template-columns:minmax(0,1fr) 36px','grid-template-columns:minmax(0,1fr) 30px','grid-template-columns:minmax(0,1fr) 27px','order:1','order:2','text-align:right','max-width:none','background:transparent','border:0','white-space:nowrap','text-overflow:ellipsis'])assert(delta.includes(s),s);
+assert(!/::|url\(|!important/.test(delta),'no generated icons, resources, or broad priority');
+assert.equal(read('index.html'),base('index.html').replace('ui-refresh.css?v=https-initial-caption-103&amp;revision=clean-ui-release-157','ui-refresh.css?v=https-initial-caption-103&amp;revision=clean-ui-release-158'));
+for(const f of cp.execFileSync('git',['ls-tree','-r','--name-only','7312dc8'],{encoding:'utf8'}).trim().split('\n').filter(f=>!f.startsWith('tests/')&&!['index.html','ui-refresh.css'].includes(f)))assert.equal(read(f),base(f),f+' unchanged');
+const source=read('console.js');assert(source.includes('<b title="${escC(item.name)}"'));assert(source.includes('<small title="${escC(item.group'));assert(source.includes('data-action="asset-open"'));
+console.log('PASS158 live recent-only row CSS, fixed responsive budgets, title/ellipsis, cache158 only ui-refresh, all unrelated production bytes unchanged');

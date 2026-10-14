@@ -1,5 +1,5 @@
 'use strict';
-const fs=require('fs'),cp=require('child_process'),assert=require('assert/strict'),crypto=require('crypto');
+const fs=require('./snapshot.cjs').at('7312dc8'),cp=require('child_process'),assert=require('assert/strict'),crypto=require('crypto');
 const base=f=>cp.execFileSync('git',['show','ceba605:'+f],{encoding:'utf8'}),now=f=>fs.readFileSync(f,'utf8');
 const addition='/* Release 157: selected JSON uses only its shared main frame; keyboard focus stays. */\nbody .json-reference-row.selected:not(:focus-visible)::after,\nbody.dark .json-reference-row.selected:not(:focus-visible)::after{border-color:transparent}\n\n';
 assert.equal(now('console.css'),base('console.css').replace('.asset-detail-actions > .btn:last-child,.icon-detail-actions > .btn:last-child','.icon-detail-actions > .btn:last-child'));
