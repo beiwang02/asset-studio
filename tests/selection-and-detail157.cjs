@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('fs'),cp=require('child_process'),assert=require('assert/strict'),crypto=require('crypto');
+const base=f=>cp.execFileSync('git',['show','ceba605:'+f],{encoding:'utf8'}),now=f=>fs.readFileSync(f,'utf8');
+const addition='/* Release 157: selected JSON uses only its shared main frame; keyboard focus stays. */\nbody .json-reference-row.selected:not(:focus-visible)::after,\nbody.dark .json-reference-row.selected:not(:focus-visible)::after{border-color:transparent}\n\n';
+assert.equal(now('console.css'),base('console.css').replace('.asset-detail-actions > .btn:last-child,.icon-detail-actions > .btn:last-child','.icon-detail-actions > .btn:last-child'));
+assert.equal(now('ui-refresh.css').replace(addition,''),base('ui-refresh.css'));
+assert.equal(now('index.html'),base('index.html').replace('revision=clean-ui-release-156','revision=clean-ui-release-157').replace('revision=clean-ui-release-153','revision=clean-ui-release-157'));
+for(const f of cp.execFileSync('git',['ls-tree','-r','--name-only','ceba605'],{encoding:'utf8'}).trim().split('\n').filter(f=>!f.startsWith('tests/')&&!['console.css','ui-refresh.css','index.html'].includes(f)))assert.equal(now(f),base(f),f+' frozen outside scope');
+assert.equal(now('console.js'),base('console.js'),'Both production DOM renderers and handlers frozen byte-for-byte');
+console.log('PASS157 exact two CSS scopes, index-only two CSS cache versions, all other production files and both DOMs unchanged');

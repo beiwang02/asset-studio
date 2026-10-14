@@ -3,6 +3,10 @@
   "workers": 4,
   "entries": [
     {
+      "file": "selection-and-detail157.cjs",
+      "kind": "current"
+    },
+    {
       "file": "checkbox-unify151.cjs",
       "kind": "current"
     },

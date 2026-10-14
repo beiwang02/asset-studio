@@ -633,6 +633,10 @@ body .asset-card .asset-name-row .asset-select{position:relative;inset:auto;disp
 body .asset-card .asset-name-row .asset-select::before{inset:auto;left:11px;top:11px;width:22px;height:22px;box-sizing:border-box}
 body .asset-card .asset-name-row .asset-select>.ui-icon{position:relative;inset:auto;width:22px;height:22px}
 
+/* Release 157: selected JSON uses only its shared main frame; keyboard focus stays. */
+body .json-reference-row.selected:not(:focus-visible)::after,
+body.dark .json-reference-row.selected:not(:focus-visible)::after{border-color:transparent}
+
 /* Release 150: intrinsic group-first wrapping; filename alone may truncate. */
 body .quick-asset .quick-asset-name-row{align-items:baseline;gap:4px;row-gap:2px;flex-wrap:wrap}
 body .quick-asset-name-row small{flex:0 0 auto;max-width:100%;white-space:normal;overflow-wrap:anywhere;overflow:visible;text-overflow:clip}
