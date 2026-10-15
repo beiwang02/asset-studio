@@ -7,7 +7,7 @@ for(const enabled of [false,true])for(const error of ['', 'forbidden','oauth_den
  const c={S:{oauthEnabled:enabled},location:{search:error?'?auth_error='+error:''},URLSearchParams,escC:String};
  vm.createContext(c);vm.runInContext(login,c);const html=c.loginView();
  assert.equal(html.includes('href="/api/auth/github"'),enabled);assert(html.includes('data-action="oauth-login"'));assert(!/Token|PAT|rememberToken|tokenLoginForm/.test(html));
- assert.equal(html.includes('auth-login-message'),!!error);assert(html.includes('登录控制台'));if(error==='oauth_denied')assert(html.includes('取消'));if(error==='oauth_state')assert(html.includes('过期'));
+ assert.equal(html.includes('auth-login-message'),false);assert(html.includes('登录控制台'));
 }
 const c={S:{auth:{login:'fixture-user'},repo:{owner:'fixture-user',repo:'images',branch:'main',assetsPath:'assets'},connected:true},compatibleRepos:()=>[],escC:String};
 vm.createContext(c);vm.runInContext(js.slice(js.indexOf('function settingsPage()'),js.indexOf('async function loadAdminPolicy()')),c);

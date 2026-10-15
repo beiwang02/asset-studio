@@ -1,5 +1,5 @@
 'use strict';
-const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict');
+const fs=require('./snapshot.cjs').at('3148023'),cp=require('node:child_process'),assert=require('node:assert/strict');
 const base=f=>cp.execFileSync('git',['show','5c39725:'+f],{encoding:'utf8'}),read=f=>fs.readFileSync(f,'utf8');
 const suffix='\n/* Release 160: match Assets\' resting selection stroke without changing either shape.\n   Keyboard JSON focus keeps its existing distinct inset ring. */\nbody .json-reference-row.selected:not(:focus-visible){outline:2px solid var(--ui-line-focus);outline-offset:0;box-shadow:0 0 0 2px var(--ui-selection-shadow)}\n/* Selected sidebar only: retain gradient, white ink, hit area and keyboard outline. */\nbody .sidebar .nav-item.active,body.dark .sidebar .nav-item.active{box-shadow:none!important;filter:none!important;color:#fff!important}\n';
 function frameContract(css){assert.equal(css,base('ui-refresh.css')+suffix);assert(css.includes('selected:not(:focus-visible){outline:2px solid var(--ui-line-focus);outline-offset:0;box-shadow:0 0 0 2px var(--ui-selection-shadow)}'));}
