@@ -411,6 +411,10 @@ body .asset-card .asset-meta{margin-inline:0}
    Keep this scoped to image cards; no disabled/loading or keyboard state reset. */
 body .asset-card,body .asset-card :is(.asset-preview,.asset-preview img,.asset-details,.asset-name-row,b,.asset-meta,button){-webkit-tap-highlight-color:transparent}
 body .asset-card:not([aria-disabled="true"]):not([aria-busy="true"]):active{filter:none!important}
+/* Asset cards are not pressed controls: suppress only the transient active paint.
+   Keep the selected frame and leave desktop hover untouched. */
+body .asset-card:not(.selected):active{border-color:var(--line)!important;transform:none!important;filter:none!important;box-shadow:none!important;outline:none!important}
+body .asset-card.selected:active{border-color:#acb2ff!important;transform:none!important;filter:none!important;box-shadow:0 0 0 2px rgba(89,101,242,.1)!important;outline:none!important}
 /* The select target and its inset square must not acquire a WebKit tap layer,
    inherited button press transition or filtered negative-z compositing layer.
    Only paint/interaction properties change; keyboard outline and state opacity stay. */
