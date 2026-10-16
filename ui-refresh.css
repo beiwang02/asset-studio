@@ -304,6 +304,8 @@ body.dark .drop-zone.dragging{border-color:var(--ui-line-focus);color:var(--ui-f
 @media(hover:hover){body.dark .group-pill:not(.active):not(:disabled):not([aria-disabled="true"]):not([aria-busy="true"]):hover,body.dark .drop-zone:hover{border-color:var(--ui-line-focus);color:var(--ui-feedback-ink)}}
 body.dark .remember-token input:checked{border-color:var(--ui-check-bg);background:var(--ui-check-bg)}
 body.dark .remember-token input:checked::after{border-color:var(--ui-check-mark)}
+body.dark .policy-toggle input[type="checkbox"]{background:var(--surface);border-color:var(--line)}
+body.dark .policy-toggle input[type="checkbox"]:checked{background-color:var(--primary);border-color:var(--primary)}
 /* Native permission checkbox alone retains a visible keyboard focus cue. */
 .policy-toggle input[type="checkbox"]:focus-visible{outline:2px solid var(--ui-line-focus)!important;outline-offset:3px;box-shadow:none!important}
 /* Open feedback belongs to actual menu lifetime, never :focus-within/:active.
