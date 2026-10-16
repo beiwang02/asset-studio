@@ -1,5 +1,5 @@
 {
-  "baseline": "3148023 + exact OAuth callback toast161 presentation only + admin access policy wording + admin access policy layout + admin policy asset cache revision",
+  "baseline": "3148023 + exact OAuth callback toast161 presentation only + admin access policy wording + admin access policy layout + admin policy asset cache revision + admin policy toggle typography",
   "algorithm": "sha256",
   "files": {
     ".dockerignore": "8b433cd89b2a4abda0cf75cdbcbc4a5a8bbb1f3dc0b09570a2bf747570c8df44",
@@ -9,7 +9,7 @@
     "LICENSE": "cac00037cfa80a2d179264fb0316f4b7228ec49c8c8c0e9ef04a6386a2322d5f",
     "README.md": "a82af31cd55b7e27fd88a910177bc410ca71dbe3b8d91b70314c3a46d659390d",
     "compose.yaml": "99fa707aa6a52847333ae14f06b30b7dd2e1d54477588d9868f2c0e72d1fdb9c",
-    "console.css": "ccb3c15288b92549876b3d451204f06bd1bcec7a7a86bc5602e7878644bf3aa7",
+    "console.css": "5587591005394772828994f098be94743b7baa2eac5697096fb0242f9d84098b",
     "console.js": "4e72ebe918a5f2580babe7e41c6cd6b9ab0aac11e01d19c863bc6df81a24b0ca",
     "fonts/OFL.txt": "18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3",
     "fonts/inter-latin-600-normal.woff2": "62553d159189834af73c9a6264704be5b2bee9a08da66a14768d8e5c6ffd2cdb",
