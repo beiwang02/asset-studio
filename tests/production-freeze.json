@@ -1,5 +1,5 @@
 {
-  "baseline": "3148023 + exact OAuth callback toast161 presentation only + admin access policy wording + admin access policy layout + admin policy asset cache revision + admin policy toggle typography",
+  "baseline": "3148023 + exact OAuth callback toast161 presentation only + admin access policy wording + admin access policy layout + admin policy asset cache revision + admin policy toggle typography + admin policy css cache revision",
   "algorithm": "sha256",
   "files": {
     ".dockerignore": "8b433cd89b2a4abda0cf75cdbcbc4a5a8bbb1f3dc0b09570a2bf747570c8df44",
@@ -25,7 +25,7 @@
     "icons/icon-192.png": "356b767a40207cc4a30c38cf8975bd5d161019cb2a0e15e7b90a62f6bab247e0",
     "icons/icon-512.png": "27f0119a75d9624c47e7ee6da92eecca463478d1398a8ddd005b4838b464af25",
     "icons/purplebrand.svg": "e57db917b880b8a4c3d790d3154ecc29119acbe60a97381ef5ca0ce7c7b18c59",
-    "index.html": "e80da85d9cd9a3aa4e3a0e6a9cd229bf038f83343efd33a0c649f142dee4d645",
+    "index.html": "fe44f3020576318a437aa249c27dca0737254eab304854b3f7dad2c1e524df54",
     "install.sh": "50f1de96ba6620ab216a5c9c284be974268f589f917a8e7398caea7ef1556eb5",
     "popup.js": "c418c860001c5cfedd3e9e059f43f8bd10660f2430f3f1aab1168957c1a97840",
     "responsive.css": "15a7c1b374f74992c8f001880e51236900e0031b2d21edc55f804738e0e81916",
