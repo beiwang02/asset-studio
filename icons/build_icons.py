@@ -1,5 +1,5 @@
 """Rebuild the hand-drawn Asset Studio icon; requires Pillow only.
-SVG and raster share a 64-unit canvas. Touch/PWA icons stay fully opaque.
+SVG and raster share a 64-unit canvas. Touch/PWA icons preserve transparent corners for Safari suggestion tiles.
 Run: python3 icons/build_icons.py (from any working directory).
 """
 from pathlib import Path
@@ -45,7 +45,7 @@ for size in (16, 32, 48, 64):
     draw_icon(size).save(ROOT / f'favicon-{size}.png', optimize=True)
 for size in (180, 192, 512):
     name = 'apple-touch-icon.png' if size == 180 else f'icon-{size}.png'
-    draw_icon(size, rounded=False).save(ROOT / name, optimize=True)
+    draw_icon(size).save(ROOT / name, optimize=True)
 draw_icon(48).save(ROOT / 'favicon.ico', format='ICO', sizes=[(16, 16), (32, 32), (48, 48)])
 draw_icon(512).save(PREVIEW / 'icon-preview.png', optimize=True)
 
@@ -54,7 +54,8 @@ for path in sorted(ROOT.glob('*.png')):
     with Image.open(path) as im:
         im.load()
         if path.name.startswith(('apple-', 'icon-')):
-            assert im.mode == 'RGB', f'{path.name} must be opaque'
+            assert im.mode == 'RGBA', f'{path.name} must preserve alpha'
+            assert im.getpixel((0, 0))[3] == 0, f'{path.name} must have transparent corners'
         print(f'{path.name}: {im.format}, {im.size}, {im.mode}, {path.stat().st_size} bytes')
 with Image.open(ROOT / 'favicon.ico') as im:
     assert im.ico.sizes() == {(16, 16), (32, 32), (48, 48)}
