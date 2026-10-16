@@ -24,4 +24,7 @@
 
 ## Deployment
 
-本轮未执行 GitHub push、VPS SSH、build/up、cache/archive 或线上 public `console.js` 核验：环境中未提供 `VPS_SSH_KEY`，且没有获得可安全确认的部署凭据/命令。未伪造线上发布结果。
+- GitHub commit：`91ca2e2 fix admin policy checkbox styling`，已推送 `origin/main`。
+- VPS：通过 `/opt/stacks/asset-studio` 的现有 compose，仅重建并更新 `asset-studio` 服务；现有 `/app/data` Docker volume、环境变量、端口和其他服务均保留。容器状态 `Up`。
+- 线上核验：`GET /` 与 `GET /console.js` 均 HTTP 200；线上 `/console.js` SHA-256 与仓库一致（`0038f3a33421ed6d3ebe0428d2d778bc729cde7d3faaa7212a27b07f336bea90`）。容器内 `console.css` 与 `ui-refresh.css` 也已更新。
+- 未执行 archive/cache 更新：本次仅发布批准的管理后台 checkbox scope，避免触碰其他归档成员或缓存范围。
