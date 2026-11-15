@@ -610,7 +610,7 @@ document.addEventListener('click', async e => {
   if(action==='page-back'){if(history.state?.ghView&&history.state.depth>0)history.back();else{S.view='overview';renderC();}return;}
   if(action==='logout'){await runSubmission(target,'正在退出…',logoutC);return;}
   if(action==='create-repo'){if(!S.auth)return notify('请先登录 GitHub','error');createRepoModal();return;}
-  if(action==='use-repo'){S.repo={owner:target.dataset.owner,repo:target.dataset.repo,branch:target.dataset.branch||'main',assetsPath:target.dataset.assetsPath||'assets'};renderC();return;}
+  if(action==='use-repo'){S.repo={owner:target.dataset.owner,repo:target.dataset.repo,branch:target.dataset.branch||'main',assetsPath:target.dataset.assetsPath||'assets'};localStorage.setItem('gh-image-repo',JSON.stringify(S.repo));renderC();return;}
   if(action==='settings'){closeC();S.view='settings';renderC();return;}
   if(action==='refresh'){await runSubmission(target,'正在刷新…',async()=>{const client=currentClient(),epoch=repositoryEpoch;if(!S.connected||GitHubClient.writing)return;await refreshRepo();if(currentClient()===client&&epoch===repositoryEpoch&&!syncDisposed)notify(S.syncError||'仓库已刷新');});return;}
   if(action==='upload'){if(!S.connected)return notify('请先连接仓库','error');uploadModal();return;}
