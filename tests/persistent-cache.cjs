@@ -1,0 +1,24 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const source=fs.readFileSync(path.join(root,'github.js'),'utf8');
+const store=new Map();
+const storage={getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k),key:i=>[...store.keys()][i],get length(){return store.size}};
+const ctx={window:{},localStorage:storage,Date,TextDecoder,Uint8Array,atob,btoa,console};vm.createContext(ctx);vm.runInContext(source,ctx);
+const Client=ctx.window.GitHubClient, config={owner:'owner',repo:'images',branch:'main',assetsPath:'assets'};
+const data={repo:{id:1},snapshot:{head:'same-head',entries:[],docs:[]},assets:[],groups:[],libraries:[],imageTimes:{},root:'assets'};
+(async()=>{
+ const first=new Client(config,'csrf1',1);first.cached=data;first.persistCache();
+ const next=new Client(config,'csrf2',1);assert(next.cached);let calls=[];
+ next.request=async p=>{calls.push(p);return {object:{sha:'same-head'}}};await next.load();assert.equal(calls.length,1);assert(calls[0].includes('/git/ref/heads/'));
+ assert(!new Client(config,'csrf',2).cached);
+ assert(!new Client({...config,branch:'other'},'csrf',1).cached);
+ assert(!new Client({...config,assetsPath:'icons'},'csrf',1).cached);
+ store.set(first.cacheKey,'broken');assert(!new Client(config,'csrf',1).cached);
+ first.persistCache();let saved=JSON.parse(store.get(first.cacheKey));saved.savedAt=Date.now()-8*86400000;store.set(first.cacheKey,JSON.stringify(saved));assert(!new Client(config,'csrf',1).cached);
+ first.persistCache();const denied=new Client(config,'csrf',1);denied.request=async()=>{throw Object.assign(Error('denied'),{status:403})};await assert.rejects(()=>denied.load());assert(!store.has(first.cacheKey));assert.equal(denied.cached,null);
+ first.persistCache();Client.clearPersistentCache();assert.equal(store.size,0);
+ const ui=fs.readFileSync(path.join(root,'console.js'),'utf8');assert(ui.includes('const client=currentClient(), cached=client.cached;'));assert(ui.includes("else await readRepo({elements:"));assert(ui.includes('S.auth?.id||S.auth?.login'));assert(ui.includes('window.GitHubClient.clearPersistentCache()'));
+ new vm.Script(ui);new vm.Script(source);
+ console.log('PASS persistent cache: reopen, one-ref unchanged check, account/branch/root isolation, corrupt/expired fallback, permission invalidation, logout cleanup, syntax');
+})().catch(e=>{console.error(e);process.exitCode=1});

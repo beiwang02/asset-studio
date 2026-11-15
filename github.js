@@ -1,6 +1,24 @@
 'use strict';
 class GitHubClient {
-  constructor(config, csrf) { this.config = { ...config }; this.csrf = csrf; }
+  constructor(config, csrf, account = '') {
+    this.config = { ...config }; this.csrf = csrf;
+    this.cacheKey = account ? 'gh-image-cache-v1:' + JSON.stringify([String(account), config.owner, config.repo, config.branch, config.assetsPath]) : '';
+    if (this.cacheKey) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(this.cacheKey) || 'null');
+        const data = saved?.data;
+        if (saved?.version === 1 && Date.now() - saved.savedAt >= 0 && Date.now() - saved.savedAt < 7 * 86400000 && data?.repo && Array.isArray(data.assets) && Array.isArray(data.groups) && Array.isArray(data.libraries) && (!data.snapshot || (Array.isArray(data.snapshot.entries) && Array.isArray(data.snapshot.docs)))) this.cached = data;
+      } catch { /* Unavailable or corrupt storage must never prevent a fresh read. */ }
+    }
+  }
+  persistCache() {
+    if (!this.cacheKey || !this.cached) return;
+    try { localStorage.setItem(this.cacheKey, JSON.stringify({version:1,savedAt:Date.now(),data:this.cached})); }
+    catch { try { localStorage.removeItem(this.cacheKey); } catch {} }
+  }
+  static clearPersistentCache() {
+    try { for (let i=localStorage.length-1;i>=0;i--) { const key=localStorage.key(i); if(key?.startsWith('gh-image-cache-v1:'))localStorage.removeItem(key); } } catch {}
+  }
   get base() { return `/repos/${encodeURIComponent(this.config.owner)}/${encodeURIComponent(this.config.repo)}`; }
   async request(path, method = 'GET', body, retried = false) {
     const response = await fetch(`/api/github?url=${encodeURIComponent('https://api.github.com' + path)}`, {
@@ -189,7 +207,9 @@ class GitHubClient {
   async load() {
     if(this.loading)return this.loading;
     this.loading=this.loadIncremental();
-    try { return await this.loading; } finally { this.loading=null; }
+    try { const data = await this.loading; this.persistCache(); return data; }
+    catch (error) { if ([401,403,404].includes(error.status)) { this.cached=null; try { localStorage.removeItem(this.cacheKey); } catch {} } throw error; }
+    finally { this.loading=null; }
   }
   async loadIncremental() {
     const previous=this.cached;

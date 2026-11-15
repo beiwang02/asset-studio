@@ -8,8 +8,8 @@ const escC = v => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&l
 const rawLibrary = lib => `https://raw.githubusercontent.com/${encodeURIComponent(S.repo.owner)}/${encodeURIComponent(S.repo.repo)}/${encodeURIComponent(S.repo.branch)}/${lib.file.split('/').map(encodeURIComponent).join('/')}`;
 let repositoryClient=null, repositoryKey='', repositoryEpoch=0;
 const currentClient = () => {
-  const key=JSON.stringify([S.repo.owner,S.repo.repo,S.repo.branch,S.repo.assetsPath,S.csrf]);
-  if(key!==repositoryKey){repositoryKey=key;repositoryEpoch++;repositoryClient=new window.GitHubClient(S.repo,S.csrf);}
+  const key=JSON.stringify([S.repo.owner,S.repo.repo,S.repo.branch,S.repo.assetsPath,S.csrf,S.auth?.id||S.auth?.login]);
+  if(key!==repositoryKey){repositoryKey=key;repositoryEpoch++;repositoryClient=new window.GitHubClient(S.repo,S.csrf,S.auth?.id||S.auth?.login||'');}
   return repositoryClient;
 };
 function notify(message, type='success') { const n=document.createElement('div'); n.className=`toast ${type}`; n.textContent=message; $c('#toastRoot').appendChild(n); setTimeout(()=>n.remove(),3600); }
@@ -463,7 +463,7 @@ async function refreshRepo(background=false) {
     renderC();
   })();
   refreshFlight=flight;
-  try { await flight.promise; } catch(e) { if(currentClient()!==client||repositoryEpoch!==epoch||syncDisposed)return;if(background){if(currentClient()===client&&repositoryEpoch===epoch&&S.connected&&!syncDisposed){const message=`同步暂缓：${e.message}`;if(S.syncError!==message)notify(message,'error');syncStatusC(message);}}else throw e; }
+  try { await flight.promise; } catch(e) { if(currentClient()!==client||repositoryEpoch!==epoch||syncDisposed)return;if([401,403,404].includes(e.status)){S.connected=false;S.groups=[];S.assets=[];S.libraries=[];S.selected.clear();S.selectedIcons.clear();renderC();notify('仓库权限或会话已失效，请重新登录或选择仓库','error');return;}if(background){if(currentClient()===client&&repositoryEpoch===epoch&&S.connected&&!syncDisposed){const message=`同步暂缓：${e.message}`;if(S.syncError!==message)notify(message,'error');syncStatusC(message);}}else throw e; }
   finally { if(refreshFlight===flight)refreshFlight=null; }
 }
 function scheduleRepositorySyncC() {
@@ -551,7 +551,7 @@ async function formSubmit(e) {
     }
   } catch(error) { notify(error.requiresRefresh||error.code==='COMMIT_OUTCOME_UNKNOWN'?'提交结果待确认，请先刷新仓库核查，不要直接重试。':error.message||'操作失败','error'); } finally { finish(); }
 }
-async function logoutC() { const response=await fetch('/api/auth/logout',{method:'POST',credentials:'include',headers:{'X-CSRF-Token':S.csrf}}); if(!response.ok)throw new Error('退出失败，请重试。'); disposeRepositorySyncC(); S.connected=false; localStorage.removeItem('gh-image-remembered-token'); location.replace('/?logged_out=1'); }
+async function logoutC() { const response=await fetch('/api/auth/logout',{method:'POST',credentials:'include',headers:{'X-CSRF-Token':S.csrf}}); if(!response.ok)throw new Error('退出失败，请重试。'); disposeRepositorySyncC(); S.connected=false; window.GitHubClient.clearPersistentCache(); localStorage.removeItem('gh-image-remembered-token'); location.replace('/?logged_out=1'); }
 async function autoSelectRepository() {
   if (!S.auth) return;
   try {
@@ -578,7 +578,14 @@ function bootAuth() {
 }
 async function runBootAuthC() { if(location.protocol!=='http:'&&location.protocol!=='https:'){ renderC(); return; } try { const r=await fetch('/api/auth/me',{credentials:'include'}); if(!r.ok)throw new Error('会话检查暂时失败'); const data=await r.json(); S.auth=data.user||null; S.csrf=data.csrf||''; S.oauthEnabled=Boolean(data.oauthEnabled); S.adminConfigured=Boolean(data.adminConfigured); S.isAdmin=Boolean(data.isAdmin); S.policyConfigured=Boolean(data.policyConfigured); if(S.auth) { await loadAdminPolicy(); renderC(); if(sessionStorage.getItem('gh-login-success')==='1'){ sessionStorage.removeItem('gh-login-success'); notify('已登录'); } if(S.repo.owner&&S.repo.repo) {
       const auth=S.auth;
-      await readRepo({elements:Object.fromEntries(Object.entries(S.repo).map(([key,value])=>[key,{value}]))});
+      const client=currentClient(), cached=client.cached;
+      if(cached) {
+        S.groups=cached.groups; S.assets=cached.assets;
+        S.libraries=cached.libraries.map(x=>({...x,gradient:'linear-gradient(135deg,#7580ff,#8c64e9)'}));
+        S.group=S.groups.some(g=>g.name===S.group)?S.group:(S.groups[0]?.name||'');
+        S.connected=true; S.loading=false; syncStatusC('已恢复本地缓存，正在检查更新');
+        renderC(); scheduleRepositorySyncC();
+      } else await readRepo({elements:Object.fromEntries(Object.entries(S.repo).map(([key,value])=>[key,{value}]))});
       if(S.auth===auth)void refreshRepositoryChoicesC();
     } else await autoSelectRepository();
   } } catch { /* Transient failures must not erase an existing identity or saved preferences. */ } renderC(); }
