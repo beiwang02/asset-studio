@@ -54,17 +54,15 @@ cd /opt/stacks/asset-studio
 nano .env
 ```
 
-仅在服务器 `.env` 中修改以下对应项（保留其他已有配置）：`PUBLIC_BASE_URL` 必填真实对外网站地址，`GITHUB_CLIENT_ID` 与 `GITHUB_CLIENT_SECRET` 必填；`GITHUB_OAUTH_SCOPE` 可保留默认 `public_repo`；`GITHUB_OAUTH_REDIRECT_URI` 选填，可留空自动推导。
+只在服务器 `.env` 中填 OAuth 应用凭据，保留其他已有配置：
 
 ```dotenv
-PUBLIC_BASE_URL=https://your-domain.example
 GITHUB_CLIENT_ID=填写刚复制的ClientID
 GITHUB_CLIENT_SECRET=填写刚生成的ClientSecret
 GITHUB_OAUTH_SCOPE=public_repo
-GITHUB_OAUTH_REDIRECT_URI=https://your-domain.example/api/auth/github/callback
 ```
 
-`GITHUB_OAUTH_REDIRECT_URI` 也可留空，由 `PUBLIC_BASE_URL` 自动推导上述回调地址；若显式填写，必须与 GitHub OAuth App 中的回调地址完全一致，并与 `PUBLIC_BASE_URL` 同源（协议、主机、端口一致），路径固定为 `/api/auth/github/callback`，不附加查询参数或片段。`public_repo` 授权范围涵盖账号可访问的公开仓库，**并非仅授权所选的一个仓库**；组织策略仍可能限制访问。
+服务端不发送 `redirect_uri`，GitHub 使用该 OAuth App 登记的**第一条 Redirect URI**。建议只登记一条，固定路径为 `/api/auth/github/callback`，不要启用通配符。请始终从该回调所在的 HTTPS 域名发起登录：登录校验 Cookie 不会跨不同网站传递。`public_repo` 授权范围涵盖账号可访问的公开仓库，**并非仅授权所选的一个仓库**；组织策略仍可能限制访问。
 
 Client Secret 只填服务器 `.env`，不要发给别人、上传 Git 或放进公开归档、截图。
 
@@ -79,7 +77,7 @@ docker compose up -d --no-deps --force-recreate asset-studio
 
 这一步让容器重新读取环境配置；普通 `docker compose restart` 不会重新加载 `.env`。仅修改这些配置不需要构建镜像。
 
-> **绑定或更换域名时：** 必须同时修改 GitHub OAuth App 的 **Homepage URL**、**Redirect URI（旧界面称 Authorization callback URL）**，以及服务器 `.env` 的 **PUBLIC_BASE_URL**；若 **GITHUB_OAUTH_REDIRECT_URI** 已显式填写，也要同步修改（留空则自动推导）。例如从 `https://old-domain.example` 改为 `https://your-domain.example`，Homepage URL 与 PUBLIC_BASE_URL 均改为新网站地址，回调地址改为 `https://your-domain.example/api/auth/github/callback`；若实际对外 URL 含非默认端口，以上地址须保留相同协议、主机和端口。保存后执行上面的 `docker compose up -d --no-deps --force-recreate asset-studio` 使环境变量生效。原先用 IP 地址访问、后来绑定域名时也一样，不能只改 DNS 而忘记更新 OAuth 配置。
+> **通过反代更换域名：** 更新 DNS / HTTPS 反代后，在 GitHub OAuth App 中更新 Homepage URL 和第一条 Redirect URI（例如 `https://your-domain.example/api/auth/github/callback`）。Asset Studio 不再读取 `PUBLIC_BASE_URL` 和 `GITHUB_OAUTH_REDIRECT_URI`，无需修改服务器 `.env` 或重启容器。旧版本升级到新版仍需部署一次。
 
 刷新网站 → 点击 **GitHub 登录** → 在 GitHub 核对应用并批准授权 → 返回网站后选择或创建自己的图片资源仓库，即可开始使用。
 

@@ -9,14 +9,13 @@ if (!Number.isInteger(sessionTTLDays) || sessionTTLDays < 1 || sessionTTLDays > 
 const SESSION_TTL_SECONDS = sessionTTLDays * 24 * 60 * 60;
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || '127.0.0.1';
-const BASE = new URL(process.env.PUBLIC_BASE_URL || `http://127.0.0.1:${PORT}`);
+// Only a parser base; never used to construct an external redirect.
+const BASE = new URL(`http://127.0.0.1:${PORT}`);
 const DELETE_REPO = process.env.ENABLE_REPO_DELETE === 'true';
 const OAUTH_CLIENT_ID = String(process.env.GITHUB_CLIENT_ID || '').trim();
 const OAUTH_CLIENT_SECRET = String(process.env.GITHUB_CLIENT_SECRET || '').trim();
 const OAUTH_SCOPE = String(process.env.GITHUB_OAUTH_SCOPE || 'public_repo').trim() || 'public_repo';
-const OAUTH_REDIRECT_URI = String(process.env.GITHUB_OAUTH_REDIRECT_URI || new URL('/api/auth/github/callback', BASE)).trim();
-const OAUTH_CALLBACK = new URL(OAUTH_REDIRECT_URI, BASE);
-if (OAUTH_CALLBACK.origin !== BASE.origin || OAUTH_CALLBACK.pathname !== '/api/auth/github/callback' || OAUTH_CALLBACK.search || OAUTH_CALLBACK.hash || OAUTH_CALLBACK.username || OAUTH_CALLBACK.password) throw new Error('OAuth 回调必须为 PUBLIC_BASE_URL 同源的 /api/auth/github/callback。');
+// GitHub uses the first callback registered for this OAuth App when redirect_uri is omitted.
 const OAUTH_ENABLED = Boolean(OAUTH_CLIENT_ID && OAUTH_CLIENT_SECRET);
 // OAuth-only: legacy ENABLE_TOKEN_LOGIN is intentionally ignored.
 const ADMIN_GITHUB_LOGIN = String(process.env.ADMIN_GITHUB_LOGIN || '').trim().toLowerCase();
@@ -31,15 +30,14 @@ try {
   // Only a genuinely absent file is a first run. Never reopen access after corruption or EACCES.
   if (error.code !== 'ENOENT') throw new Error('无法安全加载访问策略，服务启动已停止。', { cause:error });
 }
-const SECURE = BASE.protocol === 'https:';
 const sessions = new Map();
 const oauthStates = new Map();
 const random = () => randomBytes(32).toString('hex');
 const redirect = (res, location) => { res.writeHead(302, { Location:location, 'Cache-Control':'no-store' }); res.end(); };
-function oauthError(code) { const target = new URL('/', BASE); target.searchParams.set('auth_error', code); return target.toString(); }
+function oauthError(code) { return '/?' + new URLSearchParams({ auth_error:code }); }
 function oauthAuthorizeUrl(state) {
   const target = new URL('https://github.com/login/oauth/authorize');
-  target.search = new URLSearchParams({ client_id:OAUTH_CLIENT_ID, redirect_uri:OAUTH_REDIRECT_URI, scope:OAUTH_SCOPE, state }).toString();
+  target.search = new URLSearchParams({ client_id:OAUTH_CLIENT_ID, scope:OAUTH_SCOPE, state }).toString();
   return target.toString();
 }
 function clearOAuthCookie() { return cookie('gh_oauth_state', '', 0); }
@@ -65,8 +63,7 @@ const mime = { svg:'image/svg+xml', png:'image/png', ico:'image/x-icon', woff2:'
 function cookies(req) {
   return Object.fromEntries((req.headers.cookie || '').split(';').map(s => s.trim().split('=')).filter(p => p.length === 2));
 }
-function cookie(name, value, age, secure = SECURE) { return `${name}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${age}${secure ? '; Secure' : ''}`; }
-function isSecureRequest(req) { return String(req.headers['x-forwarded-proto'] || (SECURE ? 'https' : 'http')).split(',')[0].trim() === 'https'; }
+function cookie(name, value, age) { return `${name}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${age}; Secure`; }
 function json(res, code, value) { res.writeHead(code, { 'Content-Type':'application/json; charset=utf-8', 'Cache-Control':'no-store' }); res.end(JSON.stringify(value)); }
 function session(req) {
   const id = cookies(req).gh_session, value = sessions.get(id);
@@ -86,7 +83,7 @@ function createSession(tokenData, user) {
   return sid;
 }
 function requestOrigin(req) {
-  const proto = String(req.headers['x-forwarded-proto'] || (SECURE ? 'https' : 'http')).split(',')[0].trim();
+  const proto = String(req.headers['x-forwarded-proto'] || 'http').split(',')[0].trim();
   const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
   return host ? `${proto}://${host}` : BASE.origin;
 }
@@ -210,7 +207,7 @@ const server = http.createServer(async (req, res) => {
       if (url.searchParams.get('error')) return redirect(res, oauthError('oauth_denied'));
       const code = url.searchParams.get('code') || '';
       if (!code || code.length > 400) return redirect(res, oauthError('oauth_code'));
-      const tokenResponse = await github('https://github.com/login/oauth/access_token', { method:'POST', headers:{ Accept:'application/json', 'Content-Type':'application/json', 'User-Agent':'github-image-host-web' }, body:JSON.stringify({ client_id:OAUTH_CLIENT_ID, client_secret:OAUTH_CLIENT_SECRET, code, redirect_uri:OAUTH_REDIRECT_URI }) });
+      const tokenResponse = await github('https://github.com/login/oauth/access_token', { method:'POST', headers:{ Accept:'application/json', 'Content-Type':'application/json', 'User-Agent':'github-image-host-web' }, body:JSON.stringify({ client_id:OAUTH_CLIENT_ID, client_secret:OAUTH_CLIENT_SECRET, code }) });
       const tokenData = await tokenResponse.json().catch(() => ({}));
       if (!tokenResponse.ok) return redirect(res, oauthError('oauth_exchange'));
       tokenFields(tokenData);
@@ -221,7 +218,7 @@ const server = http.createServer(async (req, res) => {
       if (!permission.allowed) return redirect(res, oauthError('forbidden'));
       const sid = createSession(tokenData, user);
       res.setHeader('Set-Cookie', [clearOAuthCookie(), cookie('gh_session', sid, SESSION_TTL_SECONDS)]);
-      return redirect(res, new URL('/', BASE).toString());
+      return redirect(res, '/');
     }
     if (url.pathname === '/api/admin/policy' && req.method === 'GET') {
       const auth = session(req), permission = accessFor(auth?.user?.login);
@@ -256,12 +253,12 @@ const server = http.createServer(async (req, res) => {
       const auth = session(req);
       if (auth && !requireCSRF(req, res, auth)) return;
       sessions.delete(cookies(req).gh_session);
-      res.setHeader('Set-Cookie', cookie('gh_session', '', 0, isSecureRequest(req)));
+      res.setHeader('Set-Cookie', cookie('gh_session', '', 0));
       return json(res, 200, { ok:true });
     }
     if (url.pathname === '/api/github') {
       const auth = session(req);
-      if (!auth) { res.setHeader('Set-Cookie', cookie('gh_session', '', 0, isSecureRequest(req))); return json(res, 401, { message:'登录已过期，请重新使用 GitHub 登录。' }); }
+      if (!auth) { res.setHeader('Set-Cookie', cookie('gh_session', '', 0)); return json(res, 401, { message:'登录已过期，请重新使用 GitHub 登录。' }); }
       if (req.method !== 'GET' && !requireCSRF(req, res, auth)) return;
       let target; try { target = new URL(url.searchParams.get('url')); } catch { return json(res, 400, { message:'无效的 API 地址' }); }
       if (!allowedAPI(target, req.method)) return json(res, 403, { message:'此 API 操作未开放。' });
@@ -289,10 +286,10 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/source/')) headers['Access-Control-Allow-Origin'] = 'https://github.com';
     res.writeHead(200, headers);
     res.end(await readFile(new URL(file, ROOT)));
-  } catch (error) { if (!res.headersSent && error.status === 401) res.setHeader('Set-Cookie', cookie('gh_session', '', 0, isSecureRequest(req))); if (!res.headersSent && req.url.split('?')[0] === '/api/auth/github/callback') return redirect(res, oauthError('oauth_exchange')); if (!res.headersSent) json(res, error.status || 502, { message:error.status === 401 ? 'GitHub 授权已失效，请重新使用 GitHub 登录。' : error.status === 503 ? 'GitHub 授权刷新暂时不可用，请稍后重试。' : '请求失败，请检查网络或服务配置后重试。' }); else res.end(); }
+  } catch (error) { if (!res.headersSent && error.status === 401) res.setHeader('Set-Cookie', cookie('gh_session', '', 0)); if (!res.headersSent && req.url.split('?')[0] === '/api/auth/github/callback') return redirect(res, oauthError('oauth_exchange')); if (!res.headersSent) json(res, error.status || 502, { message:error.status === 401 ? 'GitHub 授权已失效，请重新使用 GitHub 登录。' : error.status === 503 ? 'GitHub 授权刷新暂时不可用，请稍后重试。' : '请求失败，请检查网络或服务配置后重试。' }); else res.end(); }
 });
 setInterval(() => {
   for (const [id, value] of sessions) if (value.expires <= Date.now()) sessions.delete(id);
   for (const [state, value] of oauthStates) if (value.expires < Date.now()) oauthStates.delete(state);
 }, 60000).unref();
-server.listen(PORT, HOST, () => console.log(`图床服务已启动：${BASE.origin} · Token 登录模式`));
+server.listen(PORT, HOST, () => console.log(`图床服务已启动：${HOST}:${PORT} · GitHub OAuth 登录`));
